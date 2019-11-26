@@ -1,8 +1,6 @@
-import random as rnd
+from random import choice, randint as rnd
 
-import tkinter as tk
-
-import pygame as pg
+from tkinter import Tk, Canvas, BOTH, mainloop, CENTER, Frame
 
 root = Tk()
 fr = Frame(root)
@@ -14,6 +12,8 @@ GRAVITATION = 1                              # it is g = 9,8 in real world
 WORM_ENERGY = 5
 MAX_GUN_POWER = 15
 JUMP_POWER = 3
+WORM_NUMB = 2
+
 
 class Object():
     def __init__():
@@ -63,33 +63,6 @@ class Worm(Object):
         self.energy -= 1
         self.motion()
 
-    def aim(self, event):
-        dx = event.x - self.x
-        dy = event.y - self.y
-
-        if dx == 0:
-            self.cos_a = 0
-        else:
-            self.cos_a = dx / (dx ** 2 + dy ** 2) ** 0.5
-
-        if dy == 0:
-            self.sin_a = 0
-        else:
-            self.sin_a = dy / (dx ** 2 + dy ** 2) ** 0.5
-
-    def shot_prepair(self, event):
-        self.preparation = 1
-
-    def power_up(self):
-        if self.power < MAX_GUN_POWER and self.preparation == 1:
-            self.power += 0.1
-
-    def shot (self,event):
-        self.balls.append(Ball())
-        self.power = 0
-        self.preparation = 0
-        self.energy = WARM_ENERGY
-
 
 class Bullet(Object):
     def special_charact(self):
@@ -126,21 +99,22 @@ class Jump_bullet(Bullet):
 
         for point_x in range(int(self.x) - self.rx, int(self.x) + self.rx):
             dx = -int(self.x) + point_x
-            h = int((self.r**2 - abs(int(dx)**2)**0.5)
+            h = int((self.r**2 - abs(int(dx)**2)**0.5))
             for point_y in range(int(self.y) - h, int(self.y) + h):
-                dy = point_y - self.y
+                if Game.fild[point_x][point_y] != 0:
+                    dy = point_y - self.y
 
-                if dx ** 2 + dy ** 2 < min_range_1 ** 2:
-                    min_range_2 = min_range_1
-                    min_range_1 = (dx ** 2 + dy ** 2) ** 0.5
-                    min_x_2 = min_x_1
-                    min_y_2 = min_y_1
-                    min_x_1 = point_x
-                    min_y_1 = point_y
-                elif dx ** 2 + dy ** 2 < min_range_2 ** 2:
-                    min_range_2 = (dx ** 2 + dy ** 2) ** 0.5
-                    min_x_2 = point_x
-                    min_y_2= point_y
+                    if dx ** 2 + dy ** 2 < min_range_1 ** 2:
+                        min_range_2 = min_range_1
+                        min_range_1 = (dx ** 2 + dy ** 2) ** 0.5
+                        min_x_2 = min_x_1
+                        min_y_2 = min_y_1
+                        min_x_1 = point_x
+                        min_y_1 = point_y
+                    elif dx ** 2 + dy ** 2 < min_range_2 ** 2:
+                        min_range_2 = (dx ** 2 + dy ** 2) ** 0.5
+                        min_x_2 = point_x
+                        min_y_2= point_y
 
         if min_x_1 != -1 and min_x_2 != -1:
             if min_x_2 - min_x_1 == 0:
@@ -172,7 +146,76 @@ class Jump_bullet(Bullet):
             self.Vy = instant_Vx * sin_a + self.Vy * cos_a
 
 
-class rifle_bullet(Bullet):
-    def relationships(self):
-        # TODO: need to come up with
+class Game():
+    def __init__(self):
+        self.worms = []
+        self.bullets = []
+        self.fild = []
+        self.tern = 0
+        self.wind_speed = 0
+        self.worms.append(Warm(100, 500, 0, 0, 15, 15, 0, 100))
+        self.worms.append(Warm(600, 500, 0, 0, 15, 15, 0, 100))
 
+    def warm_fild_check(self):
+        for warm in self.warms:
+            is_touch = 0
+            for point_x in range(int(warm.x) - warm.rx, int(warm.x) + warm.rx):
+                h = int((warm.r**2 - abs(int(warm.x) - point_x)**2)**0.5)
+                for point_y in range(int(warm.y) - h, int(warm.y) + h):
+                    is_touch += fild[point_x][point_y]
+        
+            if is_touch != 0:
+                if self.Vx**2 + self.Vy**2 > 50:
+                    self.hit_points -= self.Vx + self.Vy 
+                warm.Vx = 0
+                warm.Vy = 0
+
+    def bullet_check(self):
+        for bullet in self.bullets:
+            bullet.relationships()
+
+    def aim(self, event):
+        dx = event.x - self.warms[turn % WARM_NUMB].x
+        dy = event.y - self.warms[turn % WARM_NUMB].y
+
+        if dx == 0:
+            self.warms[turn % WARM_NUMB].cos_a = 0
+        else:
+            self.warms[turn % WARM_NUMB].cos_a = dx / (dx ** 2 + dy ** 2) ** 0.5
+
+        if dy == 0:
+            self.warms[turn % WARM_NUMB].sin_a = 0
+        else:
+            self.warms[turn % WARM_NUMB].sin_a = dy / (dx ** 2 + dy ** 2) ** 0.5
+
+    def shot_prepair(self, event):
+        self.preparation = 1
+
+    def power_up(self):
+        if self.warms[turn % WARM_NUMB].power < MAX_GUN_POWER and self.preparation == 1:
+            self.warms[turn % WARM_NUMB].power += 0.1
+
+    def shot (self,event):
+        # TODO
+        self.balls.append(Ball())
+        self.power = 0
+        self.preparation = 0
+        self.energy = WARM_ENERGY
+
+    def new_game(self):
+        self.first_create()
+        self.first_drow()
+        self.update()
+
+        canvas.bind('<Motion>', self.warms[self.tern % WARM_NUMB].aim)
+        canvas.bind('<Button-1>', self.warms[self.tern % WARM_NUMB].shot_prepair)
+        self.warms[self.tern % WARM_NUMB].power_up()
+        canvas.bind('<ButtonRelease-1>', self.warms[self.tern % WARM_NUMB].shot)
+        canvas.bind('<Up>', self.warms[self.tern % WARM_NUMB].jump_up)
+        canvas.bind('<Down>', self.warms[self.tern % WARM_NUMB].jump_down)
+        canvas.bind('<Left>', self.warms[self.tern % WARM_NUMB].jump_left)
+        canvas.bind('<Right>', self.warms[self.turn % WARM_NUMB].jump_right)
+    
+    def main(self):
+        self.new_game()
+        
