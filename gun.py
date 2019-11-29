@@ -115,6 +115,7 @@ class gun():
         self.an = 1
         self.x = w.x
         self.y = w.y
+        self.balls = []
         self.id = canv.create_line(w.x, w.y, w.x + 30, w.y - 30, width=7)
 
     def fire2_start(self, event):
@@ -126,14 +127,12 @@ class gun():
         Происходит при отпускании кнопки мыши.
         Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
         """
-        global balls, bullet
-        bullet += 1
         new_ball = ball(self)
         new_ball.r += 5
         self.an = math.atan2((event.y-new_ball.y), (event.x-new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an)
         new_ball.vy = self.f2_power * math.sin(self.an)
-        balls += [new_ball]
+        self.balls += [new_ball]
         self.f2_on = 0
         self.f2_power = 10
 
@@ -164,16 +163,23 @@ class gun():
 
 
 def new_game(event=''):
-    global gun, screen1, balls, bullet, points, points_count
-    bullet = 0
-    balls = []
+    g1.balls = []
+    g2.balls
     root.bind('<s>', switch)
     canv.bind('<Button-1>', g1.fire2_start)
     canv.bind('<ButtonRelease-1>', g1.fire2_end)
     canv.bind('<Motion>', g1.targetting)
     root.bind('<r>', replay)
     while True:
-        for b in balls:
+        for b in g1.balls:
+            b.move()
+            if b.hittest(w1) and w1.live:
+                b.live = 0
+                w1.hit()
+            if b.hittest(w2) and w2.live:
+                b.live = 0
+                w2.hit()
+        for b in g2.balls:
             b.move()
             if b.hittest(w1) and w1.live:
                 b.live = 0
@@ -192,10 +198,8 @@ def new_game(event=''):
         g2.targetting()
         g2.power_up()
     canv.delete(gun)
-    root.after(tau, new_game)
+    root.after(3000, new_game)
 
-def delete_text():
-    canv.itemconfig(screen1, text = '')
 
 def switch(event):
     global switch_count
@@ -211,23 +215,14 @@ def switch(event):
 
 def replay(event):
 	print(event.keycode)
-	t1.live = 0
-	t2.live = 0
 
-
-screen1 = canv.create_text(400, 300, text = '', font = '28')
-points = 0
-points_count = canv.create_text(30,30,text = points,font = '28')
 switch_count = 1
+balls = []
 w1 = worm()
 w2 = worm()
 w2.vx = 0
 g1 = gun(w1)
 g2 = gun(w2)
-bullet = 0
-balls = []
-canv.itemconfig(screen1, text = 'Для перезапуска игры нажмите R')
-root.after(3000, delete_text)
 new_game()
 
 tk.mainloop()
