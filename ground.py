@@ -50,11 +50,9 @@ class Gun:
         self.vy = 0
         self.numb = numb
         self.live = 3
-        self.r = 15
+        self.r = 5
         self.x = rnd(20, 220) + 500 * numb            # work only for 2 players
         self.y = 0
-        self.len_x = 20
-        self.len_y = 20
         self.colors = ['blue', 'green', 'red', 'brown']
         self.body_id = canvas.create_oval(
                 self.x - self.r,
@@ -63,7 +61,7 @@ class Gun:
                 self.y + self.r,
                 fill=self.colors[self.numb])
 
-    def move(self, field, cos_a, sin_a):
+    def move(self, field):
         self.x += self.vx
         self.y += self.vy
 
@@ -80,34 +78,32 @@ class Gun:
         else:
             self.vy += 0.1
 
-        self.drowing(cos_a, sin_a)
+        self.drowing()
 
     def move_left(self, event):
         if self.energy > 0:
-            self.vx -= 2
-            self.vy -= 2
+            self.vx -= 2.5
+#            self.vy -= 2.5
         #    self.energy -= 1
 
     def move_right(self, event):
         if self.energy > 0:
-            self.vx += 2
-            self.vy -= 2
+            self.vx += 2.5
+#            self.vy -= 2.5
         #    self.energy -= 1
 
     def move_up(self, event):
         if self.energy > 0:
-            self.vy -= 2
+            self.vy -= 2.5
         #    self.energy -= 1
 
     def move_down(self, event):
         if self.energy > 0:
-            self.vy += 2
+            self.vy += 2.5
         #    self.energy -= 1
 
-    def drowing(self, cos_a, sin_a):
+    def drowing(self):
         canvas.delete(self.body_id)
-        self.len_x = 3 * 10 * cos_a
-        self.len_y = -3 * 10 * sin_a
 
         self.body_id = canvas.create_oval(
                 self.x - self.r,
@@ -116,38 +112,53 @@ class Gun:
                 self.y + self.r,
                 fill=self.colors[self.numb])
 
-        self.gun_id = canvas.create_line(
-                self.x,
-                self.y,
-                self.x + self.len_x,
-                self.y - self.len_y,
-                fill='black',
-                width=7)
+
+class Bang():
+    def __init__(self, field):
+        self.field = field
+        self.r = 15
+
+    def collapse(self, event):
+        for point_x in range(int(event.x) - self.r, int(event.x) + self.r):
+            h = int((self.r**2 - abs(int(event.x) - point_x)**2)**0.5)
+            for point_y in range(int(event.y) - h, int(event.y) + h):
+                self.field[point_x][point_y] = 0
+
+        self.body_id = canvas.create_oval(
+                event.x - self.r,
+                event.y - self.r,
+                event.x + self.r,
+                event.y + self.r,
+                fill='white',
+                outline='white',
+                )
+
+        return(self.field)
 
 
 class Game():
     def __init__(self):
         self.field = field_model()
         self.is_fild = 0
-        self.cos_a = 0
-        self.sin_a = 0
         self.gun = []
         self.gun_numb = 1
+        bang = Bang(self.field)
 
         for numb in range(self.gun_numb):
             self.gun.append(Gun(numb))
 
-        self.angle = 0
+    def is_bang(self, event):
+        bang = Bang(self.field)
+        self.field = bang.collapse(event) 
 
     def main(self):
-        self.gun[0].move(self.field, self.cos_a, self.sin_a)
-
+        self.gun[0].move(self.field)
+        canvas.bind('<Button-1>', self.is_bang)
         canvas.bind('<Up>', self.gun[0].move_up)
         canvas.bind('<Down>', self.gun[0].move_down)
         canvas.bind('<Left>', self.gun[0].move_left)
         canvas.bind('<Right>', self.gun[0].move_right)
-        self.gun[0].drowing(self.cos_a, self.sin_a)
-        
+
         root.after(30, self.main)
 
 
