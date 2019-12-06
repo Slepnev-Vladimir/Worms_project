@@ -9,11 +9,11 @@ root.geometry('800x600')
 canv = tk.Canvas(root, bg='white')
 canv.pack(fill=tk.BOTH, expand=1)
 
-class worm():
+class Worm():
     def __init__(self):
         self.x = 50
         self.y = 400
-        self.vx = 1
+        self.vx = 0
         self.vy = 0
         self.r = 15
         self.live = 3
@@ -37,7 +37,7 @@ class worm():
         self.live -= 1
 
 
-class ball():
+class Ball():
     def __init__(self, g):
         """ Конструктор класса ball
 
@@ -107,7 +107,7 @@ class ball():
 
 
 
-class gun():
+class Gun():
     def __init__(self, w) :
         """w - червячок, который держит оружие"""
         self.f2_power = 10
@@ -127,7 +127,7 @@ class gun():
         Происходит при отпускании кнопки мыши.
         Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
         """
-        new_ball = ball(self)
+        new_ball = Ball(self)
         new_ball.r += 5
         self.an = math.atan2((event.y-new_ball.y), (event.x-new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an)
@@ -218,11 +218,11 @@ def replay(event):
 
 switch_count = 1
 balls = []
-w1 = worm()
-w2 = worm()
+w1 = Worm()
+w2 = Worm()
 w2.vx = 0
-g1 = gun(w1)
-g2 = gun(w2)
+g1 = Gun(w1)
+g2 = Gun(w2)
 new_game()
 
 tk.mainloop()

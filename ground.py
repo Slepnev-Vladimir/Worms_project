@@ -2,7 +2,7 @@ from random import choice, randint as rnd
 
 from tkinter import Tk, Canvas, BOTH, mainloop, CENTER, Frame
 
-import math
+import numpy as np
 
 import numpy
 
@@ -11,6 +11,7 @@ fr = Frame(root)
 root.geometry('800x600')
 canvas = Canvas(root, bg='white')
 canvas.pack(fill=BOTH, expand=1)
+<<<<<<< HEAD
 WORMS_NUMBER = 1
 UPDATE_TIME = 30
 
@@ -35,27 +36,56 @@ class Field:
         for x in range(0, 800):
             for y in range(500, 600):
                 self.field_list[x, y] = 1
-
-        return(self.field_list)
-
-
-    def field_visual(self):
-        self.land_1 = canvas.create_polygon((100, 150), (300, 150), (300, 250), (100, 250))
-        self.land_2 = canvas.create_polygon((500, 150), (700, 150), (700, 250), (500, 250))
-        self.land_3 = canvas.create_polygon((200, 450), (400, 250), (600, 450))
-        self.land_4 = canvas.create_polygon((0, 500), (800, 500), (800, 600), (0, 600))
+=======
 
 
+def field_model():
+    field = np.empty(800, 600)
+
+    for x in range(100, 300):
+        for y in range(150, 250):
+            field[x, y] = 1
+
+    for x in range(500, 700):
+        for y in range(150, 250):
+            field[x, y] = 1
+
+    for y in range(250, 450):
+        for x in range(400 - (y - 250) , 400 + (y - 250)):
+            field[x, y] = 1
+
+    for x in range(0, 800):
+        for y in range(500, 600):
+            field[x, y] = 1
+>>>>>>> 62774bc81b3189681793b8ffcc86cbfc1ee94088
+
+    return(field)
+
+
+def field_visual():
+    land_1 = canvas.create_polygon((100, 150), (300, 150), (300, 250), (100, 250))
+    land_2 = canvas.create_polygon((500, 150), (700, 150), (700, 250), (500, 250))
+    land_3 = canvas.create_polygon((200, 450), (400, 250), (600, 450))
+    land_4 = canvas.create_polygon((0, 500), (800, 500), (800, 600), (0, 600))
+
+
+<<<<<<< HEAD
 class Worm:
     def __init__(self, num):
+=======
+class Gun:
+    def __init__(self, numb):
+>>>>>>> 62774bc81b3189681793b8ffcc86cbfc1ee94088
         self.energy = 3
         self.vx = 0
         self.vy = 0
-        self.num = num
+        self.numb = numb
         self.live = 3
-        self.r = 10
-        self.x = rnd(20, 220) + 500 * num            # work only for 2 players
+        self.r = 15
+        self.x = rnd(20, 220) + 500 * numb            # work only for 2 players
         self.y = 0
+        self.len_x = 20
+        self.len_y = 20
         self.colors = ['blue', 'green', 'red', 'brown']
         self.gun = Bazooka(self)
         self.body_id = canvas.create_oval(
@@ -63,8 +93,9 @@ class Worm:
                 self.y - self.r,
                 self.x + self.r,
                 self.y + self.r,
-                fill=self.colors[self.num])
+                fill=self.colors[self.numb])
 
+<<<<<<< HEAD
     def choose_bazooka(self, event):
         self.gun = Bazooka(self)
 
@@ -72,6 +103,9 @@ class Worm:
         self.gun = Bazooka1(self)
     
     def move(self, field):
+=======
+    def move(self, field, cos_a, sin_a):
+>>>>>>> 62774bc81b3189681793b8ffcc86cbfc1ee94088
         self.x += self.vx
         self.y += self.vy
 
@@ -88,32 +122,37 @@ class Worm:
         else:
             self.vy += 0.1
 
+<<<<<<< HEAD
         self.gun.move()
+=======
+        self.drowing(cos_a, sin_a)
+>>>>>>> 62774bc81b3189681793b8ffcc86cbfc1ee94088
 
     def move_left(self, event):
         if self.energy > 0:
-            self.vx -= 2.5
-            self.vy -= 2.5
+            self.vx -= 2
+            self.vy -= 2
         #    self.energy -= 1
 
     def move_right(self, event):
         if self.energy > 0:
-            self.vx += 2.5
-            self.vy -= 2.5
+            self.vx += 2
+            self.vy -= 2
         #    self.energy -= 1
 
     def move_up(self, event):
         if self.energy > 0:
-            self.vy -= 2.5
+            self.vy -= 2
         #    self.energy -= 1
 
     def move_down(self, event):
         if self.energy > 0:
-            self.vy += 2.5
+            self.vy += 2
         #    self.energy -= 1
 
-    def drowing(self):
+    def drowing(self, cos_a, sin_a):
         canvas.delete(self.body_id)
+<<<<<<< HEAD
         self.body_id = canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
@@ -225,11 +264,17 @@ class Bullet():
         self.vx = 0
         self.vy = 0
         self.color = 'blue'
+=======
+        self.len_x = 3 * 10 * cos_a
+        self.len_y = -3 * 10 * sin_a
+
+>>>>>>> 62774bc81b3189681793b8ffcc86cbfc1ee94088
         self.body_id = canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
                 self.x + self.r,
                 self.y + self.r,
+<<<<<<< HEAD
                 fill=self.color,
         )
         self.live = 100
@@ -365,10 +410,22 @@ class BazookaBullet1(Bullet):
                 )
         if self.live < 0:
             canvas.delete(self.body_id)
+=======
+                fill=self.colors[self.numb])
+
+        self.gun_id = canvas.create_line(
+                self.x,
+                self.y,
+                self.x + self.len_x,
+                self.y - self.len_y,
+                fill='black',
+                width=7)
+>>>>>>> 62774bc81b3189681793b8ffcc86cbfc1ee94088
 
 
 class Game():
     def __init__(self):
+<<<<<<< HEAD
         self.field = Field()
         self.field_list = self.field.field_model()
         self.is_fild = 0
@@ -451,8 +508,33 @@ class Game():
         self.visualization()
         self.bang_check()
         root.after(UPDATE_TIME, self.main)
+=======
+        self.field = field_model()
+        self.is_field = 0
+        self.cos_a = 0
+        self.sin_a = 0
+        self.gun = []
+        self.gun_numb = 1
+
+        for numb in range(self.gun_numb):
+            self.gun.append(Gun(numb))
+
+        self.angle = 0
+
+    def main(self):
+        self.gun[0].move(self.field, self.cos_a, self.sin_a)
+
+        canvas.bind('<Up>', self.gun[0].move_up)
+        canvas.bind('<Down>', self.gun[0].move_down)
+        canvas.bind('<Left>', self.gun[0].move_left)
+        canvas.bind('<Right>', self.gun[0].move_right)
+        self.gun[0].drowing(self.cos_a, self.sin_a)
+
+        root.after(30, self.main)
+>>>>>>> 62774bc81b3189681793b8ffcc86cbfc1ee94088
 
 
+field_visual()
 game = Game()
 game.main()
 mainloop()

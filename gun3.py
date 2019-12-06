@@ -14,8 +14,10 @@ dT = 10
 
 
 class Target():
-    """Responsible for creating a ractangle object that"""
-    """You get prize for hiting it"""
+    """
+    Responsible for creating a ractangle object that 
+    You get prize for hiting it
+    """
     def __init__(self, score):
         self.score = score
         self.prize = 1

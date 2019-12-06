@@ -12,18 +12,23 @@ GRAVITATION = 1                              # it is g = 9,8 in real world
 WORM_ENERGY = 5
 MAX_GUN_POWER = 15
 JUMP_POWER = 3
-WORM_NUMB = 2
+WORM_NUM = 2
 
 
 class Object():
-    def __init__():
+    def __init__(self, x, y):
         self.x = 0
         self.y = 0
         self.Vx = 0
         self.Vy = 0
         self.rx = 0
         self.ry = 0
-        self.body = pg.Rect((x - rx, y - ry, 2*rx, 2*ry))
+        self.id = canvas.create_oval(
+                self.x - self.rx,
+                self.y - self.ry,
+                self.x + self.rx,
+                self.y + self.ry,
+                fill=self.color)
         self.coef_drag = 0                  # a = -coef_drag * V;    a = F/m
         self.hit_points = 0
 
@@ -216,6 +221,11 @@ class Game():
         canvas.bind('<Left>', self.warms[self.tern % WARM_NUMB].jump_left)
         canvas.bind('<Right>', self.warms[self.turn % WARM_NUMB].jump_right)
     
-    def main(self):
-        self.new_game()
-        
+    def main():
+        self.new_game(self)
+
+    def first_create(self):
+        warm = Warms()
+
+m = Game()
+m.main()
