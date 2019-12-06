@@ -4,38 +4,37 @@ from tkinter import Tk, Canvas, BOTH, mainloop, CENTER, Frame
 
 import math
 
+import numpy
+
 root = Tk()
 fr = Frame(root)
 root.geometry('800x600')
 canvas = Canvas(root, bg='white')
 canvas.pack(fill=BOTH, expand=1)
-WARMS_NUMBER = 1
+WORMS_NUMBER = 1
+UPDATE_TIME = 30
+
 
 class Field:
     def __init__(self):
-        self.field_list = []
+        self.field_list = numpy.zeros((800, 600))
 
     def field_model(self):
-        for x in range(0, 800):
-            self.field_list.append([])
-            for y in range(0, 600):
-                self.field_list[x].append(0)
-
         for x in range(100, 300):
             for y in range(150, 250):
-                self.field_list[x][y] = 1
+                self.field_list[x, y] = 1
 
         for x in range(500, 700):
             for y in range(150, 250):
-                self.field_list[x][y] = 1
+                self.field_list[x, y] = 1
 
         for y in range(250, 450):
             for x in range(400 - (y - 250) , 400 + (y - 250)):
-                self.field_list[x][y] = 1
+                self.field_list[x, y] = 1
 
         for x in range(0, 800):
             for y in range(500, 600):
-                self.field_list[x][y] = 1
+                self.field_list[x, y] = 1
 
         return(self.field_list)
 
@@ -47,7 +46,7 @@ class Field:
         self.land_4 = canvas.create_polygon((0, 500), (800, 500), (800, 600), (0, 600))
 
 
-class Warm:
+class Worm:
     def __init__(self, num):
         self.energy = 3
         self.vx = 0
@@ -58,6 +57,7 @@ class Warm:
         self.x = rnd(20, 220) + 500 * num            # work only for 2 players
         self.y = 0
         self.colors = ['blue', 'green', 'red', 'brown']
+        self.gun = Bazooka(self)
         self.body_id = canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
@@ -65,6 +65,12 @@ class Warm:
                 self.y + self.r,
                 fill=self.colors[self.num])
 
+    def choose_bazooka(self, event):
+        self.gun = Bazooka(self)
+
+    def choose_bazooka1(self, event):
+        self.gun = Bazooka1(self)
+    
     def move(self, field):
         self.x += self.vx
         self.y += self.vy
@@ -74,13 +80,15 @@ class Warm:
             for point_x in range(int(self.x) - self.r, int(self.x) + self.r):
                 h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
                 for point_y in range(int(self.y) - h, int(self.y) + h):
-                    is_touch += field[point_x][point_y]
+                    is_touch += field[point_x, point_y]
 
         if is_touch != 0:
             self.vy = 0
             self.vx = 0
         else:
             self.vy += 0.1
+
+        self.gun.move()
 
     def move_left(self, event):
         if self.energy > 0:
@@ -112,64 +120,137 @@ class Warm:
                 self.x + self.r,
                 self.y + self.r,
                 fill=self.colors[self.num])
+        self.gun.drowing()
+        if self.live < 0:
+            canvas.delete(self.body_id)
 
 
-class Ball():
+class Gun():
+    def __init__(self, worm):
+        self.worm = worm
+        self.live = self.worm.live
+        self.power = 0
+        self.preparation = 0
+        self.angle = 0
+        self.y = worm.y
+        self.x = worm.x
+        self.body_id = canvas.create_line(
+                self.x,
+                self.y,
+                self.x + 20,
+                self.y - 20,
+                width=7)
+
+    def shot_prepair(self, event):
+        self.preparation = 1
+
+    def targetting(self, event=0):
+        if event:
+            self.angle = math.atan2((event.y - self.y), (event.x - self.x))
+        if self.preparation:
+            canvas.itemconfig(self.body_id, fill='orange')
+        else:
+            canvas.itemconfig(self.body_id, fill='black')
+
+    def power_up(self):
+        if self.preparation == 1:
+            if self.power < 30:
+                self.power += 0.5
+            canvas.itemconfig(self.body_id, fill='orange')
+        else:
+            canvas.itemconfig(self.body_id, fill='black')
+    
+    def move(self):
+        self.x = self.worm.x
+        self.y = self.worm.y
+        self.live = self.worm.live
+    
+
+class Bazooka(Gun):
+    def new_bullet(self, event, bullets):
+        bullet = BazookaBullet(self)
+        bullet.init()
+        self.angle = math.atan2((event.y - bullet.y), (event.x - bullet.x))
+        bullet.vx = self.power * math.cos(self.angle)
+        bullet.vy = self.power * math.sin(self.angle)
+        self.preparation = 0
+        self.power = 0
+        bullets += [bullet]
+        return(bullets)
+
+    def drowing(self):
+        canvas.delete(self.body_id)
+        self.body_id = canvas.create_line(
+                self.x,
+                self.y,
+                self.x + max(self.power, 10) * math.cos(self.angle),
+                self.y + max(self.power, 10) * math.sin(self.angle),
+                width=7,
+                )
+        if self.live < 0:
+            canvas.delete(self.body_id)
+
+
+class Bazooka1(Gun):
+    def new_bullet(self, event, bullets):
+        bullet = BazookaBullet1(self)
+        bullet.init()
+        self.angle = math.atan2((event.y - bullet.y), (event.x - bullet.x))
+        bullet.vx = self.power * math.cos(self.angle)
+        bullet.vy = self.power * math.sin(self.angle)
+        self.preparation = 0
+        self.power = 0
+        bullets += [bullet]
+        return(bullets)
+
+    def drowing(self):
+        canvas.delete(self.body_id)
+        self.body_id = canvas.create_line(
+                self.x,
+                self.y,
+                self.x + max(self.power, 10) * math.cos(self.angle),
+                self.y + max(self.power, 10) * math.sin(self.angle),
+                width=7,
+                )
+        if self.live < 0:
+            canvas.delete(self.body_id)
+
+
+class Bullet():
     def __init__(self, gun):
-        self.splash = 15
+        self.splash = 0
         self.x = gun.x
         self.y = gun.y
-        self.r = 5
+        self.r = 0
         self.vx = 0
         self.vy = 0
-        self.color = choice(['blue', 'green', 'red', 'brown'])
+        self.color = 'blue'
         self.body_id = canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
                 self.x + self.r,
                 self.y + self.r,
-                fill=self.color
+                fill=self.color,
         )
-        self.live = 300
+        self.live = 100
         self.activation = 0
 
-    def set_coords(self):
-        canvas.coords(
-                self.body_id,
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r
-        )
+    def collapse(self, num, field):
+        for point_x in range(int(self.x) - self.splash,
+                int(self.x) + self.splash):
+            h = int((self.splash**2 - abs(int(self.x) - point_x)**2)**0.5)
+            for point_y in range(int(self.y) - h, int(self.y) + h):
+                field[point_x, point_y] = 0
 
-    def move(self, field):
-        self.x += self.vx
-        self.y += self.vy
-        is_touch = 0
-
-        if (self.x + self.splash < 800
-                and self.x - self.splash > 0
-                and self.y + self.splash < 600
-                and self.y - self.splash > 0):
-            if self.y > self.r:
-                for point_x in range(int(self.x) - self.r, int(self.x) + self.r):
-                    h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
-                    for point_y in range(int(self.y) - h, int(self.y) + h):
-                        is_touch += field[point_x][point_y]
-
-        if is_touch != 0:
-            self.vy = 0
-            self.vx = 0
-            self.live = 0
-        else:
-            self.vy += 0.1
-        
-        canvas.move(self.body_id, self.vx, self.vy)
-        
-        self.activation += 1
-        self.live -= 1
-        if self.live < 0:
-            canvas.delete(self.body_id)
+        self.body_id = canvas.create_oval(
+                self.x - self.splash,
+                self.y - self.splash,
+                self.x + self.splash,
+                self.y + self.splash,
+                fill='white',
+                outline='white',
+                )
+        return(field)
 
     def hittest(self, obj):
         """Функция проверяет сталкивалкивается ли данный обьект с целью, описываемой в обьекте obj.
@@ -186,54 +267,104 @@ class Ball():
             return False
 
 
-class Gun():
-    def __init__(self, worm):
-        self.worm = worm
-        self.power = 10
-        self.preparation = 0
-        self.angle = 1
-        self.x = worm.x
-        self.y = worm.y
-        self.balls = []
-        self.body_id = canvas.create_line(
-                worm.x,
-                worm.y,
-                worm.x + 30,
-                worm.y - 30,
-                width=7)
+class BazookaBullet(Bullet):
+    def init(self):
+        self.splash = 15
+        self.r = 5
+        self.color = 'blue'
+        self.body_id = canvas.create_oval(
+                self.x - self.r,
+                self.y - self.r,
+                self.x + self.r,
+                self.y + self.r,
+                fill=self.color,
+                )
 
-    def shot_prepair(self, event):
-        self.preparation = 1
+    def move(self, field):
+        self.x += self.vx
+        self.y += self.vy
+        is_touch = 0
 
-    def targetting(self, event=0):
-        if event:
-            self.angle = math.atan2((event.y-self.y), (event.x-self.x))
-        if self.preparation:
-            canvas.itemconfig(self.body_id, fill='orange')
+        if (self.x + self.splash < 800
+                and self.x - self.splash > 0
+                and self.y + self.splash < 600
+                and self.y - self.splash > 0):
+            if self.y > self.r:
+                for point_x in range(int(self.x) - self.r, int(self.x) + self.r):
+                    h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
+                    for point_y in range(int(self.y) - h, int(self.y) + h):
+                        is_touch += field[point_x, point_y]
+
+        if is_touch != 0:
+            self.vy = 0
+            self.vx = 0
+            self.live = 0
         else:
-            canvas.itemconfig(self.body_id, fill='black')
-
-    def power_up(self):
-        if self.preparation:
-            if self.power < 100:
-                self.power += 1
-            canv.itemconfig(self.body_id, fill='orange')
-        else:
-            canv.itemconfig(self.body_id, fill='black')
-    
-    def move(self):
-        self.x = self.worm.x
-        self.y = self.worm.y
-    
+            self.vy += 0.1
+        
+        self.live -= 1
+   
     def drowing(self):
         canvas.delete(self.body_id)
-        self.body_id = canvas.create_line(
-                self.x,
-                self.y,
-                self.x + max(self.power, 20) * math.cos(self.angle),
-                self.y + max(self.power, 20) * math.sin(self.angle),
-                width=7,
+        self.body_id = canvas.create_oval(
+                self.x - self.r,
+                self.y - self.r,
+                self.x + self.r,
+                self.y + self.r,
+                fill=self.color,
                 )
+        if self.live < 0:
+            canvas.delete(self.body_id)
+
+
+class BazookaBullet1(Bullet):
+    def init(self):
+        self.splash = 30
+        self.r = 5
+        self.color = 'red'
+        self.body_id = canvas.create_oval(
+                self.x - self.r,
+                self.y - self.r,
+                self.x + self.r,
+                self.y + self.r,
+                fill=self.color,
+                )
+
+    def move(self, field):
+        self.x += self.vx
+        self.y += self.vy
+        is_touch = 0
+
+        if (self.x + self.splash < 800
+                and self.x - self.splash > 0
+                and self.y + self.splash < 600
+                and self.y - self.splash > 0):
+            if self.y > self.r:
+                for point_x in range(int(self.x) - self.r, int(self.x) + self.r):
+                    h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
+                    for point_y in range(int(self.y) - h, int(self.y) + h):
+                        is_touch += field[point_x, point_y]
+
+        if is_touch != 0:
+            self.vy = 0
+            self.vx = 0
+            self.live = 0
+        else:
+            self.vy += 0.1
+        
+        self.live -= 1
+   
+    def drowing(self):
+        canvas.delete(self.body_id)
+        self.body_id = canvas.create_oval(
+                self.x - self.r,
+                self.y - self.r,
+                self.x + self.r,
+                self.y + self.r,
+                fill=self.color,
+                )
+        if self.live < 0:
+            canvas.delete(self.body_id)
 
 
 class Game():
@@ -241,91 +372,85 @@ class Game():
         self.field = Field()
         self.field_list = self.field.field_model()
         self.is_fild = 0
-        self.warms = []
+        self.worms = []
         self.guns = []
-        self.balls = []
+        self.bullets = []
         self.field.field_visual()
         self.tern = 0
 
-        for num in range(WARMS_NUMBER):
-            self.warms.append(Warm(num))
-            self.guns.append(Gun(self.warms[num]))
+        for num in range(WORMS_NUMBER):
+            self.worms.append(Worm(num))
 
     def bang_check(self):
         num = 0
-        while num < len(self.balls):
+        while num < len(self.bullets):
             is_touch = 0
-            if (self.balls[num].x + self.balls[num].splash < 800
-                    and self.balls[num].x - self.balls[num].splash > 0
-                    and self.balls[num].y + self.balls[num].splash < 600
-                    and self.balls[num].y - self.balls[num].splash > 0):
-                for point_x in range(int(self.balls[num].x) - self.balls[num].r,
-                        int(self.balls[num].x) + self.balls[num].r):
-                    h = int((self.balls[num].r**2 - abs(int(self.balls[num].x)
+            if (self.bullets[num].x + self.bullets[num].splash < 800
+                    and self.bullets[num].x - self.bullets[num].splash > 0
+                    and self.bullets[num].y + self.bullets[num].splash < 600
+                    and self.bullets[num].y - self.bullets[num].splash > 0):
+                for point_x in range(int(self.bullets[num].x) - self.bullets[num].r,
+                        int(self.bullets[num].x) + self.bullets[num].r):
+                    h = int((self.bullets[num].r**2 - abs(int(self.bullets[num].x)
                         - point_x)**2)**0.5)
-                    for point_y in range(int(self.balls[num].y) - h,
-                            int(self.balls[num].y) + h):
-                        is_touch += self.field_list[point_x][point_y]
+                    for point_y in range(int(self.bullets[num].y) - h,
+                            int(self.bullets[num].y) + h):
+                        is_touch += self.field_list[point_x, point_y]
 
-            if is_touch != 0:
-                self.collapse(num)
+                if is_touch != 0:
+                    self.field_list = self.bullets[num].collapse(num, self.field_list)
 
-            if self.balls[num].live <= 0:
-                self.balls.pop(num)
-                print(1)
+                if self.bullets[num].live <= 0:
+                    self.field_list = self.bullets[num].collapse(num, self.field_list)
+            if self.bullets[num].live <= 0:
+                self.bullets.pop(num)
             
             num += 1
-        
-    def collapse(self, num):
-        for point_x in range(int(self.balls[num].x) - self.balls[num].splash, int(self.balls[num].x) + self.balls[num].splash):
-            h = int((self.balls[num].splash**2 - abs(int(self.balls[num].x) - point_x)**2)**0.5)
-            for point_y in range(int(self.balls[num].y) - h, int(self.balls[num].y) + h):
-                self.field_list[point_x][point_y] = 0
-
-        self.body_id = canvas.create_oval(
-                self.balls[num].x - self.balls[num].splash,
-                self.balls[num].y - self.balls[num].splash,
-                self.balls[num].x + self.balls[num].splash,
-                self.balls[num].y + self.balls[num].splash,
-                fill='white',
-                outline='white',
-                )
 
     def shot(self, event):
-        new_ball = Ball(self.guns[self.tern % WARMS_NUMBER])
-        self.angle = math.atan2((event.y - new_ball.y), (event.x - new_ball.x))
-        new_ball.vx = self.guns[self.tern % WARMS_NUMBER].power * math.cos(self.angle)
-        new_ball.vy = self.guns[self.tern % WARMS_NUMBER].power * math.sin(self.angle)
-        self.balls += [new_ball]
-        self.guns[self.tern % WARMS_NUMBER].preparation = 0
-        self.guns[self.tern % WARMS_NUMBER].power = 10
+        self.bullets = self.worms[self.tern % WORMS_NUMBER].gun.new_bullet(event, self.bullets)
+        self.tern += 1
 
     def motion(self):
-        for num in range(WARMS_NUMBER):
-            self.warms[num].move(self.field_list)
-            self.guns[num].move()
+        for num in range(WORMS_NUMBER):
+            self.worms[num].move(self.field_list)
 
-        for num in range(len(self.balls)):
-            self.balls[num].move(self.field_list)
+        for num in range(len(self.bullets)):
+            self.bullets[num].move(self.field_list)
 
     def visualization(self):
-        for num in range(WARMS_NUMBER):
-            self.warms[num].drowing()
-            self.guns[num].drowing()
+        for num in range(WORMS_NUMBER):
+            self.worms[num].drowing()
+
+        for bullet in self.bullets:
+            bullet.drowing()
+
+    def shooting_processing(self):
+        canvas.bind('<Motion>', self.worms[self.tern % WORMS_NUMBER].gun.targetting)
+        canvas.bind('<Button-1>', self.worms[self.tern % WORMS_NUMBER].gun.shot_prepair)
+        self.worms[self.tern % WORMS_NUMBER].gun.power_up()
+        canvas.bind('<ButtonRelease-1>', self.shot)
+
+    def walking_processing(self):
+        canvas.bind('<Up>', self.worms[self.tern % WORMS_NUMBER].move_up)
+        canvas.bind('<Up>', self.worms[self.tern % WORMS_NUMBER].move_up)
+        canvas.bind('<Up>', self.worms[self.tern % WORMS_NUMBER].move_up)
+        canvas.bind('<Down>', self.worms[self.tern % WORMS_NUMBER].move_down)
+        canvas.bind('<Left>', self.worms[self.tern % WORMS_NUMBER].move_left)
+        canvas.bind('<Right>', self.worms[self.tern % WORMS_NUMBER].move_right)
+
+    def choose_weapon(self):
+        canvas.bind('<q>', self.worms[self.tern % WORMS_NUMBER].choose_bazooka)
+        canvas.bind('<w>', self.worms[self.tern % WORMS_NUMBER].choose_bazooka1)
 
     def main(self):
-        canvas.bind('<Motion>', self.guns[self.tern % WARMS_NUMBER].targetting)
-        canvas.bind('<Button-1>', self.guns[self.tern % WARMS_NUMBER].preparation)
-        canvas.bind('<ButtonRelease-1>', self.shot)
-        canvas.bind('<Up>', self.warms[self.tern % WARMS_NUMBER].move_up)
-        canvas.bind('<Down>', self.warms[self.tern % WARMS_NUMBER].move_down)
-        canvas.bind('<Left>', self.warms[self.tern % WARMS_NUMBER].move_left)
-        canvas.bind('<Right>', self.warms[self.tern % WARMS_NUMBER].move_right)
+        self.shooting_processing()
+        self.walking_processing()
+        self.choose_weapon()
         self.motion()
         self.visualization()
         self.bang_check()
-
-        root.after(30, self.main)
+        root.after(UPDATE_TIME, self.main)
 
 
 game = Game()
