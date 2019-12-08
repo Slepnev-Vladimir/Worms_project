@@ -14,6 +14,7 @@ canvas.pack(fill=BOTH, expand=1)
 WORMS_NUMBER = 2
 UPDATE_TIME = 30
 GRAV_CONST = 0.1
+WORM_ENERGY = 10
 
 
 class Field:
@@ -22,41 +23,42 @@ class Field:
 
     def field_model(self):
         for x in range(100, 300):
-            for y in range(150, 250):
+            for y in range(100, 200):
                 self.field_list[x, y] = 1
 
         for x in range(500, 700):
-            for y in range(150, 250):
+            for y in range(100, 200):
                 self.field_list[x, y] = 1
 
-        for y in range(250, 450):
-            for x in range(400 - (y - 250) , 400 + (y - 250)):
+        for y in range(200, 400):
+            for x in range(400 - (y - 200) , 400 + (y - 200)):
                 self.field_list[x, y] = 1
 
         for x in range(0, 800):
-            for y in range(500, 600):
+            for y in range(450, 600):
                 self.field_list[x, y] = 1
 
         return(self.field_list)
 
 
     def field_visual(self):
-        self.land_1 = canvas.create_polygon((100, 150), (300, 150), (300, 250), (100, 250))
-        self.land_2 = canvas.create_polygon((500, 150), (700, 150), (700, 250), (500, 250))
-        self.land_3 = canvas.create_polygon((200, 450), (400, 250), (600, 450))
-        self.land_4 = canvas.create_polygon((0, 500), (800, 500), (800, 600), (0, 600))
+        self.land_1 = canvas.create_polygon((100, 100), (300, 100), (300, 200), (100, 200))
+        self.land_2 = canvas.create_polygon((500, 100), (700, 100), (700, 200), (500, 200))
+        self.land_3 = canvas.create_polygon((200, 400), (400, 200), (600, 400))
+        self.land_4 = canvas.create_polygon((0, 450), (800, 450), (800, 600), (0, 600))
 
 
 class Worm:
     def __init__(self, num):
-        self.energy = 3
+        self.is_touch = 0
+        self.energy = WORM_ENERGY
         self.vx = 0
         self.vy = 0
         self.num = num
         self.live = 100
-        self.r = 10
-        self.x = rnd(20, 220) + 500 * num            # work only for 2 players
-        self.y = 0
+        self.r = 10                                 # if change, change move
+        self.x = rnd(20, 220) + 500 * num           # work only for 2 players
+        self.y = 20
         self.colors = ['blue', 'green', 'red', 'brown']
         self.gun = Bazooka(self)
         self.body_id = canvas.create_oval(
@@ -78,14 +80,22 @@ class Worm:
         self.x += self.vx
         self.y += self.vy
 
-        is_touch = 0
-        if self.y > self.r:
+        self.is_touch = 0
+        if (self.x + self.r < 800 
+                and self.x - self.r > 0
+                and self.y + self.r < 600
+                and self.y - self.r > 0): 
             for point_x in range(int(self.x) - self.r, int(self.x) + self.r):
                 h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
                 for point_y in range(int(self.y) - h, int(self.y) + h):
-                    is_touch += field[point_x, point_y]
-
-        if is_touch != 0:
+                    self.is_touch += field[point_x, point_y]
+        else:
+            self.live -= 1
+        
+        if self.is_touch == 296:            # depends on the size of the worm
+            self.live -= 1
+        
+        if self.is_touch != 0:
             self.vy = 0
             self.vx = 0
         else:
@@ -94,26 +104,48 @@ class Worm:
         self.gun.move()
 
     def move_left(self, event):
-        if self.energy > 0:
+        if self.is_touch == 0:
+            if self.energy >= 3:
+                self.vx -= 2.5
+                self.vy -= 2.5
+                self.energy -= 3
+        elif self.energy >= 1:
+            self.energy -= 1
             self.vx -= 2.5
             self.vy -= 2.5
-        #    self.energy -= 1
+        print('energy = ', self.energy)
 
     def move_right(self, event):
-        if self.energy > 0:
+        if self.is_touch == 0:
+            if self.energy >= 3:
+                self.vx += 2.5
+                self.vy -= 2.5
+                self.energy -= 3
+        elif self.energy >= 1:
+            self.energy -= 1
             self.vx += 2.5
             self.vy -= 2.5
-        #    self.energy -= 1
+        print('energy = ', self.energy)
 
     def move_up(self, event):
-        if self.energy > 0:
+        if self.is_touch == 0:
+            if self.energy >= 3:
+                self.vy -= 2.5
+                self.energy -= 3
+        elif self.energy >= 1:
+            self.energy -= 1
             self.vy -= 2.5
-        #    self.energy -= 1
+        print('energy = ', self.energy)
 
     def move_down(self, event):
-        if self.energy > 0:
+        if self.is_touch == 0:
+            if self.energy >= 3:
+                self.vy += 2.5
+                self.energy -= 3
+        elif self.energy >= 1:
+            self.energy -= 1
             self.vy += 2.5
-        #    self.energy -= 1
+        print('energy = ', self.energy)
 
     def drowing(self):
         canvas.delete(self.body_id)
@@ -146,7 +178,10 @@ class Gun():
                 width=7)
 
     def shot_prepair(self, event):
-        self.preparation = 1
+        if self.worm.energy >= self.worm.gun.energy_cost():
+            self.preparation = 1
+            self.worm.energy -= self.worm.gun.energy_cost()
+            print('energy = ', self.worm.energy)
 
     def targetting(self, event=0):
         if event:
@@ -184,6 +219,9 @@ class Bazooka(Gun):
         bullets += [bullet]
         return(bullets)
 
+    def energy_cost(self):
+        return(6)
+
     def drowing(self):
         canvas.delete(self.body_id)
         self.body_id = canvas.create_line(
@@ -211,6 +249,9 @@ class Grenade(Gun):
         bullets += [bullet]
         return(bullets)
 
+    def energy_cost(self):
+        return(6)
+    
     def drowing(self):
         canvas.delete(self.body_id)
         self.body_id = canvas.create_line(
@@ -235,7 +276,6 @@ class Bullet():
         self.vy = 0
         self.color = 'blue'
         self.body_id = 0
-        self.live = 100
         self.activation = 0
 
     def collapse(self, field):
@@ -260,6 +300,7 @@ class BazookaBullet(Bullet):
     def init(self):
         self.splash = 20
         self.r = 5
+        self.live = 1000
         self.x += self.r * math.cos(self.gun.angle)
         self.y += self.r * math.sin(self.gun.angle)
         self.color = 'blue'
@@ -273,10 +314,26 @@ class BazookaBullet(Bullet):
 
     def damage(self, worm):
         live = worm.live
-        live -= int(max(0, 2.5 * (self.splash + worm.r
+        live -= int(max(0, 1.5 * (self.splash + worm.r
             - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
         return(live)
+    
+    def charge_x(self, worm):
+        vx = worm.vx
+        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
+            vx += 0.15 * (self.splash + worm.r - ((self.x - worm.x)**2
+                    + (self.y - worm.y)**2)**0.5) * (worm.x - self.x) / (((self.x
+                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        return(vx)
 
+    def charge_y(self, worm):
+        vy = worm.vy
+        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
+            vy += 0.15 * (self.splash + worm.r - ((self.x - worm.x)**2
+                    + (self.y - worm.y)**2)**0.5) * (self.x - worm.x) / (((self.x
+                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        return(vy)
+    
     def move(self, field):
         self.x += self.vx
         self.y += self.vy
@@ -320,6 +377,7 @@ class BazookaBullet(Bullet):
 
 class GrenadeBullet(Bullet):
     def init(self):
+        self.live = 200
         self.elastic = 0.6
         self.splash = 20
         self.r = 5
@@ -336,9 +394,25 @@ class GrenadeBullet(Bullet):
     
     def damage(self, worm):
         live = worm.live
-        live -= int(max(0, 2.5 * (self.splash + worm.r
+        live -= int(max(0, 1.5 * (self.splash + worm.r
             - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
         return(live)
+    
+    def charge_x(self, worm):
+        vx = worm.vx
+        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
+            vx += 0.15 * (self.splash + worm.r - ((self.x - worm.x)**2
+                    + (self.y - worm.y)**2)**0.5) * (worm.x - self.x) / (((self.x
+                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        return(vx)
+
+    def charge_y(self, worm):
+        vy = worm.vy
+        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
+            vy += 0.15 * (self.splash + worm.r - ((self.x - worm.x)**2
+                    + (self.y - worm.y)**2)**0.5) * (self.x - worm.x) / (((self.x
+                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        return(vy)
     
     def is_collision(self, field):
         if (self.x + self.splash < 800
@@ -454,7 +528,9 @@ class Game():
                     self.field_list = self.bullets[num].collapse(self.field_list)
                     for worm in self.worms:
                         worm.live = self.bullets[num].damage(worm)
-                        print(worm.live)
+                        worm.vx = self.bullets[num].charge_x(worm)
+                        worm.vy = self.bullets[num].charge_y(worm)
+                        print('hp = ', worm.live)
                 self.bullets.pop(num)
             num += 1
             
@@ -473,10 +549,13 @@ class Game():
     def next_tern(self):
         self.tern += 1
         self.tern = self.tern % self.worms_number
+        for worm in self.worms:
+            worm.energy = WORM_ENERGY
+        print('next tern, tern = ', self.tern)
 
     def shot(self, event):
-        self.bullets = self.worms[self.tern].gun.new_bullet(event, self.bullets)
-        self.next_tern()
+        if self.worms[self.tern].gun.preparation == 1:
+            self.bullets = self.worms[self.tern].gun.new_bullet(event, self.bullets)
 
     def motion(self):
         for num in range(self.worms_number):
@@ -500,8 +579,6 @@ class Game():
 
     def walking_processing(self):
         canvas.bind('<Up>', self.worms[self.tern].move_up)
-        canvas.bind('<Up>', self.worms[self.tern].move_up)
-        canvas.bind('<Up>', self.worms[self.tern].move_up)
         canvas.bind('<Down>', self.worms[self.tern].move_down)
         canvas.bind('<Left>', self.worms[self.tern].move_left)
         canvas.bind('<Right>', self.worms[self.tern].move_right)
@@ -509,6 +586,9 @@ class Game():
     def choose_weapon(self):
         canvas.bind('<q>', self.worms[self.tern].choose_bazooka)
         canvas.bind('<w>', self.worms[self.tern].choose_grenade)
+
+    def pass_tern(self, event):
+        self.worms[self.tern].energy = 0
 
     def main(self):
         self.shooting_processing()
@@ -518,7 +598,12 @@ class Game():
         self.visualization()
         self.bang_check()
         self.is_hit()
+        canvas.bind('<p>', self.pass_tern)
+
+
         if self.worms_number > 1:
+            if self.worms[self.tern].energy <= 0:
+                self.next_tern()
             root.after(UPDATE_TIME, self.main)
         else:
             print('gg wp')
