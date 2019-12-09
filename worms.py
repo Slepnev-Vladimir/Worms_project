@@ -106,45 +106,45 @@ class Worm:
     def move_left(self, event):
         if self.is_touch == 0:
             if self.energy >= 3:
-                self.vx -= 2.5
-                self.vy -= 2.5
+                self.vx -= 2
+                self.vy -= 2
                 self.energy -= 3
         elif self.energy >= 1:
             self.energy -= 1
-            self.vx -= 2.5
-            self.vy -= 2.5
+            self.vx -= 2
+            self.vy -= 2
         print('energy = ', self.energy)
 
     def move_right(self, event):
         if self.is_touch == 0:
             if self.energy >= 3:
-                self.vx += 2.5
-                self.vy -= 2.5
+                self.vx += 2
+                self.vy -= 2
                 self.energy -= 3
         elif self.energy >= 1:
             self.energy -= 1
-            self.vx += 2.5
-            self.vy -= 2.5
+            self.vx += 2
+            self.vy -= 2
         print('energy = ', self.energy)
 
     def move_up(self, event):
         if self.is_touch == 0:
             if self.energy >= 3:
-                self.vy -= 2.5
+                self.vy -= 2
                 self.energy -= 3
         elif self.energy >= 1:
             self.energy -= 1
-            self.vy -= 2.5
+            self.vy -= 2
         print('energy = ', self.energy)
 
     def move_down(self, event):
         if self.is_touch == 0:
             if self.energy >= 3:
-                self.vy += 2.5
+                self.vy += 2
                 self.energy -= 3
         elif self.energy >= 1:
             self.energy -= 1
-            self.vy += 2.5
+            self.vy += 2
         print('energy = ', self.energy)
 
     def drowing(self):
@@ -178,7 +178,8 @@ class Gun():
                 width=7)
 
     def shot_prepair(self, event):
-        if self.worm.energy >= self.worm.gun.energy_cost():
+        if (self.worm.energy >= self.worm.gun.energy_cost()
+                and self.preparation != 1):
             self.preparation = 1
             self.worm.energy -= self.worm.gun.energy_cost()
             print('energy = ', self.worm.energy)
@@ -193,7 +194,7 @@ class Gun():
 
     def power_up(self):
         if self.preparation == 1:
-            if self.power < 30:
+            if self.power < 10:
                 self.power += 0.5
             canvas.itemconfig(self.body_id, fill='orange')
         else:
@@ -602,7 +603,8 @@ class Game():
 
 
         if self.worms_number > 1:
-            if self.worms[self.tern].energy <= 0:
+            if (self.worms[self.tern].energy <= 0
+                    and self.worms[self.tern].gun.preparation == 0):
                 self.next_tern()
             root.after(UPDATE_TIME, self.main)
         else:
