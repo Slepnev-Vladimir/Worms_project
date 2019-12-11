@@ -11,7 +11,7 @@ fr = Frame(root)
 root.geometry('800x600')
 canvas = Canvas(root, bg='white')
 canvas.pack(fill=BOTH, expand=1)
-WORMS_NUMBER = 2
+WORMS_NUMBER = 3
 UPDATE_TIME = 30
 GRAV_CONST = 0.1
 WORM_ENERGY = 10
@@ -57,7 +57,7 @@ class Worm:
         self.num = num
         self.live = 100
         self.r = 10                                 # if change, change move
-        self.x = rnd(20, 220) + 500 * num           # work only for 2 players
+        self.x = rnd(0, 800//WORMS_NUMBER) + num*(800//WORMS_NUMBER)
         self.y = 20
         self.colors = ['blue', 'green', 'red', 'brown']
         self.gun = Bazooka(self)
@@ -96,6 +96,8 @@ class Worm:
             self.live -= 1
         
         if self.is_touch != 0:
+            if self.vy**2 + self.vx**2 > 30:
+                self.live -= int((self.vx**2 + self.vy**2)**0.5)
             self.vy = 0
             self.vx = 0
         else:
@@ -540,6 +542,7 @@ class Game():
             if self.worms[num].live <= 0:
                 self.worms.pop(num)
                 self.worms_number -= 1
+                self.tern -= 1
             num += 1
     
     def is_hit(self):
