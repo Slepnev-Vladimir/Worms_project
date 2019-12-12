@@ -9,7 +9,7 @@ import numpy
 root = Tk()
 fr = Frame(root)
 root.geometry('800x600')
-canvas = Canvas(root, bg='white')
+canvas = Canvas(root, bg='lightblue')
 canvas.pack(fill=BOTH, expand=1)
 WORMS_NUMBER = 3
 UPDATE_TIME = 30
@@ -42,10 +42,11 @@ class Field:
 
 
     def field_visual(self):
-        self.land_1 = canvas.create_polygon((100, 100), (300, 100), (300, 200), (100, 200))
-        self.land_2 = canvas.create_polygon((500, 100), (700, 100), (700, 200), (500, 200))
-        self.land_3 = canvas.create_polygon((200, 400), (400, 200), (600, 400))
-        self.land_4 = canvas.create_polygon((0, 450), (800, 450), (800, 600), (0, 600))
+        self.land_1 = canvas.create_polygon((100, 100), (300, 100), (300, 200), (100, 200), fill='green')
+        self.land_2 = canvas.create_polygon((500, 100), (700, 100), (700, 200), (500, 200), fill='green')
+        self.land_3 = canvas.create_polygon((200, 400), (400, 200), (600, 400), fill='green')
+        self.land_4 = canvas.create_polygon((0, 450), (800, 450), (800, 600), (0, 600), fill='green')
+        self.sun = canvas.create_oval((20, 20), (50, 50), fill = 'yellow')
 
 
 class Worm:
@@ -287,15 +288,7 @@ class Bullet():
             h = int((self.splash**2 - abs(int(self.x) - point_x)**2)**0.5)
             for point_y in range(int(self.y) - h, int(self.y) + h):
                 field[point_x, point_y] = 0
-
-        self.body_id = canvas.create_oval(
-                self.x - self.splash,
-                self.y - self.splash,
-                self.x + self.splash,
-                self.y + self.splash,
-                fill='white',
-                outline='white',
-                )
+        game.start_explosion(self)
         return(field)
 
 
@@ -516,6 +509,11 @@ class Game():
         self.field.field_visual()
         self.tern = 0
         self.worms_number = WORMS_NUMBER
+        self.expl_count = 0
+        self.expl_x = 0
+        self.expl_y = 0
+        self.explode = 0
+        self.expl_splash = 0
 
         for num in range(WORMS_NUMBER):
             self.worms.append(Worm(num))
@@ -574,6 +572,39 @@ class Game():
 
         for bullet in self.bullets:
             bullet.drowing()
+    
+    def start_explosion(self, bullet):
+        self.explode = bullet
+        self.expl_x = bullet.x
+        self.expl_y = bullet.y
+        self.expl_splash = bullet.splash
+        self.expl_count = 1
+            
+    def explosion(self):
+        if self.expl_count > 0 and self.expl_count < 20:
+            self.explode.body_id = canvas.create_oval(
+            self.expl_x - self.expl_splash + 20 - self.expl_count,
+            self.expl_y - self.expl_splash + 20 - self.expl_count,
+            self.expl_x + self.expl_splash - 20 + self.expl_count,
+            self.expl_y + self.expl_splash - 20 + self.expl_count,
+            fill='orange',
+            outline='black',
+            )
+            self.expl_count += 7
+        elif self.expl_count > 0:
+            self.explode.body_id = canvas.create_oval(
+                    self.expl_x - self.expl_splash,
+                    self.expl_y - self.expl_splash,
+                    self.expl_x + self.expl_splash,
+                    self.expl_y + self.expl_splash,
+                    fill='lightblue',
+                    outline='lightblue',
+                    )
+            self.expl_count = 0
+            self.explode = 0
+            self.expl_x = 0
+            self.expl_y = 0
+            self.expl_splash = 0
 
     def shooting_processing(self):
         canvas.bind('<Motion>', self.worms[self.tern].gun.targetting)
@@ -600,6 +631,7 @@ class Game():
         self.choose_weapon()
         self.motion()
         self.visualization()
+        self.explosion()
         self.bang_check()
         self.is_hit()
         canvas.bind('<p>', self.pass_tern)
