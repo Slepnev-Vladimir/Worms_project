@@ -72,46 +72,60 @@ class Worm:
         self.gun.move()
 
     def move_left(self, event):
+        if self.is_touch != 0 and self.energy >= 4:
+            self.vx -= 0.4
+            self.vy -= 0.4
+            self.energy -= 4
+            print('energy = ', self.energy)
+
+    def move_right(self, event):
+        if self.is_touch != 0 and self.energy >= 4:
+            self.vx += 0.4
+            self.vy -= 0.4
+            self.energy -= 4
+            print('energy = ', self.energy)
+
+    def jump_left(self, event):
         if self.is_touch == 0:
-            if self.energy >= 3:
+            if self.energy >= 300:
                 self.vx -= 2
                 self.vy -= 2
-                self.energy -= 3
-        elif self.energy >= 1:
-            self.energy -= 1
+                self.energy -= 300
+        elif self.energy >= 100:
+            self.energy -= 100
             self.vx -= 2
             self.vy -= 2
         print('energy = ', self.energy)
 
-    def move_right(self, event):
+    def jump_right(self, event):
         if self.is_touch == 0:
-            if self.energy >= 3:
+            if self.energy >= 300:
                 self.vx += 2
                 self.vy -= 2
-                self.energy -= 3
-        elif self.energy >= 1:
-            self.energy -= 1
+                self.energy -= 300
+        elif self.energy >= 100:
+            self.energy -= 100
             self.vx += 2
             self.vy -= 2
         print('energy = ', self.energy)
 
-    def move_up(self, event):
+    def jump_up(self, event):
         if self.is_touch == 0:
-            if self.energy >= 3:
+            if self.energy >= 300:
                 self.vy -= 2
-                self.energy -= 3
-        elif self.energy >= 1:
-            self.energy -= 1
+                self.energy -= 300
+        elif self.energy >= 100:
+            self.energy -= 100
             self.vy -= 2
         print('energy = ', self.energy)
 
-    def move_down(self, event):
+    def jump_down(self, event):
         if self.is_touch == 0:
-            if self.energy >= 3:
+            if self.energy >= 300:
                 self.vy += 2
-                self.energy -= 3
-        elif self.energy >= 1:
-            self.energy -= 1
+                self.energy -= 300
+        elif self.energy >= 100:
+            self.energy -= 100
             self.vy += 2
         print('energy = ', self.energy)
 

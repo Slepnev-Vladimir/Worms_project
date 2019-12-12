@@ -34,6 +34,7 @@ class Game():
         self.bullets = []
         self.field.field_visual()
         self.tern = 0
+        self.tern_end = 0
         self.worms_number = self.const['worms_number']
 
         self.expl_count = 0
@@ -107,8 +108,11 @@ class Game():
         self.canvas.bind('<ButtonRelease-1>', self.shot)
 
     def walking_processing(self):
-        self.canvas.bind('<Up>', self.worms[self.tern].move_up)
-        self.canvas.bind('<Down>', self.worms[self.tern].move_down)
+        self.canvas.bind('<Shift-Up>', self.worms[self.tern].jump_up)
+        self.canvas.bind('<Shift-Down>', self.worms[self.tern].jump_down)
+        self.canvas.bind('<Shift-Left>', self.worms[self.tern].jump_left)
+        self.canvas.bind('<Shift-Right>', self.worms[self.tern].jump_right)
+
         self.canvas.bind('<Left>', self.worms[self.tern].move_left)
         self.canvas.bind('<Right>', self.worms[self.tern].move_right)
 
@@ -116,8 +120,9 @@ class Game():
         self.canvas.bind('<q>', self.worms[self.tern].choose_bazooka)
         self.canvas.bind('<w>', self.worms[self.tern].choose_grenade)
 
-    def pass_tern(self, event):
+    def is_tern_end(self, event):
         self.worms[self.tern].energy = 0
+        self.tern_end = 1
 
     def main(self):
         self.shooting_processing()
@@ -127,12 +132,14 @@ class Game():
         self.visualization()
         self.bang_check()
         self.is_hit()
-        self.canvas.bind('<p>', self.pass_tern)
+        self.canvas.bind('<p>', self.is_tern_end)
 
         if self.worms_number > 1:
             if (self.worms[self.tern].energy <= 0
-                    and self.worms[self.tern].gun.preparation == 0):
+                    and self.worms[self.tern].gun.preparation == 0
+                    and self.tern_end == 1):
                 self.next_tern()
+                self.tern_end = 0
             self.root.after(self.const['update_time'], self.main)
         else:
             print('gg wp')

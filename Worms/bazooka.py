@@ -21,7 +21,7 @@ class Bazooka(Gun):
         return(bullets)
 
     def energy_cost(self):
-        return(6)
+        return(600)
 
     def drowing(self):
         self.canvas.delete(self.body_id)
@@ -44,6 +44,8 @@ class BazookaBullet(Bullet):
         self.live = 1000
         self.x += self.r * math.cos(self.gun.angle)
         self.y += self.r * math.sin(self.gun.angle)
+        if self.vx != 0:
+            self.angle = math.atan2(self.vy, self.vx)
         self.color = 'blue'
         self.body_id = self.canvas.create_oval(
                 self.x - self.r,
@@ -78,6 +80,9 @@ class BazookaBullet(Bullet):
     def move(self, field):
         self.x += self.vx
         self.y += self.vy
+        if self.vx != 0:
+            self.angle = math.atan2(self.vy, self.vx)
+        print(self.angle)
         is_touch = 0
 
         if (self.x + self.splash < 800

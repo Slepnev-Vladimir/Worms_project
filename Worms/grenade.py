@@ -22,7 +22,7 @@ class Grenade(Gun):
         return(bullets)
 
     def energy_cost(self):
-        return(6)
+        return(600)
     
     def drowing(self):
         self.canvas.delete(self.body_id)
@@ -139,6 +139,10 @@ class GrenadeBullet(Bullet):
         instant_vx = self.vx
         self.vx = self.vx * cos_a - self.vy * sin_a
         self.vy = instant_vx * sin_a + self.vy * cos_a
+
+        if self.vy < abs(sin_a):
+            self.vy -= abs(sin_a)
+            print(sin_a)
 
     def move(self, field):
         self.vy += self.const['grav_const']
