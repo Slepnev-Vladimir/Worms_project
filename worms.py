@@ -76,26 +76,26 @@ class Worm:
     def choose_grenade(self, event):
         canvas.delete(self.gun.body_id)
         self.gun = Grenade(self)
-    
+
     def move(self, field):
         self.x += self.vx
         self.y += self.vy
 
         self.is_touch = 0
-        if (self.x + self.r < 800 
+        if (self.x + self.r < 800
                 and self.x - self.r > 0
                 and self.y + self.r < 600
-                and self.y - self.r > 0): 
+                and self.y - self.r > 0):
             for point_x in range(int(self.x) - self.r, int(self.x) + self.r):
                 h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
                 for point_y in range(int(self.y) - h, int(self.y) + h):
                     self.is_touch += field[point_x, point_y]
         else:
             self.live -= 1
-        
+
         if self.is_touch == 296:            # depends on the size of the worm
             self.live -= 1
-        
+
         if self.is_touch != 0:
             if self.vy**2 + self.vx**2 > 30:
                 self.live -= int((self.vx**2 + self.vy**2)**0.5)
@@ -202,12 +202,12 @@ class Gun():
             canvas.itemconfig(self.body_id, fill='orange')
         else:
             canvas.itemconfig(self.body_id, fill='black')
-    
+
     def move(self):
         self.x = self.worm.x
         self.y = self.worm.y
         self.live = self.worm.live
-    
+
 
 class Bazooka(Gun):
     def new_bullet(self, event, bullets):
@@ -255,7 +255,7 @@ class Grenade(Gun):
 
     def energy_cost(self):
         return(6)
-    
+
     def drowing(self):
         canvas.delete(self.body_id)
         self.body_id = canvas.create_line(
@@ -313,7 +313,7 @@ class BazookaBullet(Bullet):
         live -= int(max(0, 1.5 * (self.splash + worm.r
             - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
         return(live)
-    
+
     def charge_x(self, worm):
         vx = worm.vx
         if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
@@ -329,7 +329,7 @@ class BazookaBullet(Bullet):
                     + (self.y - worm.y)**2)**0.5) * (self.x - worm.x) / (((self.x
                     - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
         return(vy)
-    
+
     def move(self, field):
         self.x += self.vx
         self.y += self.vy
@@ -351,13 +351,13 @@ class BazookaBullet(Bullet):
             self.live = 0
         else:
             self.vy += GRAV_CONST
-        
+
         self.live -= 1
 
     def hit_test(self, obj):
         if (self.x - obj.x) ** 2 + (self.y - obj.y) ** 2 <= (self.r + obj.r) ** 2:
             self.live = 0
-   
+
     def drowing(self):
         canvas.delete(self.body_id)
         self.body_id = canvas.create_oval(
@@ -387,13 +387,13 @@ class GrenadeBullet(Bullet):
                 self.y + self.r,
                 fill=self.color,
                 )
-    
+
     def damage(self, worm):
         live = worm.live
         live -= int(max(0, 1.5 * (self.splash + worm.r
             - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
         return(live)
-    
+
     def charge_x(self, worm):
         vx = worm.vx
         if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
@@ -409,12 +409,12 @@ class GrenadeBullet(Bullet):
                     + (self.y - worm.y)**2)**0.5) * (self.x - worm.x) / (((self.x
                     - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
         return(vy)
-    
+
     def is_collision(self, field):
         if (self.x + self.splash < 800
                 and self.x - self.splash > 0
                 and self.y + self.splash < 600
-                and self.y - self.splash > 0): 
+                and self.y - self.splash > 0):
             min_range_1 = self.r
             min_range_2 = self.r
             self.min_x_1 = -1
@@ -462,13 +462,13 @@ class GrenadeBullet(Bullet):
         self.vy -= GRAV_CONST
         self.vy *= self.elastic
         self.vx *= self.elastic
-        
+
         instant_vx = self.vx
         self.vx = self.vx * cos_a + self.vy * sin_a
         self.vy = -instant_vx * sin_a + self.vy * cos_a
-        
+
         self.vy *= -1
-        
+
         instant_vx = self.vx
         self.vx = self.vx * cos_a - self.vy * sin_a
         self.vy = instant_vx * sin_a + self.vy * cos_a
@@ -479,12 +479,12 @@ class GrenadeBullet(Bullet):
         self.y += self.vy
         self.is_collision(field)
         self.live -= 1
-   
+
     def hit_test(self, obj):
         if (self.x - obj.x) ** 2 + (self.y - obj.y) ** 2 <= (self.r + obj.r) ** 2:
             self.vx = 0
             self.vy = 0
-    
+
     def drowing(self):
         canvas.delete(self.body_id)
         self.body_id = canvas.create_oval(
@@ -522,10 +522,10 @@ class Game():
         num = 0
         while num < len(self.bullets):
             if self.bullets[num].live <= 0:
-                if (self.bullets[num].x + self.bullets[num].splash < 800 
+                if (self.bullets[num].x + self.bullets[num].splash < 800
                         and self.bullets[num].x - self.bullets[num].splash > 0
                         and self.bullets[num].y + self.bullets[num].splash < 600
-                        and self.bullets[num].y - self.bullets[num].splash > 0): 
+                        and self.bullets[num].y - self.bullets[num].splash > 0):
                     self.field_list = self.bullets[num].collapse(self.field_list)
                     for worm in self.worms:
                         worm.live = self.bullets[num].damage(worm)
@@ -534,7 +534,7 @@ class Game():
                         print('hp = ', worm.live)
                 self.bullets.pop(num)
             num += 1
-            
+
         num = 0
         while num < len(self.worms):
             if self.worms[num].live <= 0:
@@ -542,7 +542,7 @@ class Game():
                 self.worms_number -= 1
                 self.tern -= 1
             num += 1
-    
+
     def is_hit(self):
         for worm in self.worms:
             for bullet in self.bullets:
@@ -572,21 +572,21 @@ class Game():
 
         for bullet in self.bullets:
             bullet.drowing()
-    
+
     def start_explosion(self, bullet):
         self.explode = bullet
         self.expl_x = bullet.x
         self.expl_y = bullet.y
         self.expl_splash = bullet.splash
         self.expl_count = 1
-            
+
     def explosion(self):
-        if self.expl_count > 0 and self.expl_count < 20:
+        if self.expl_count > 0 and self.expl_count < self.expl_splash:
             self.explode.body_id = canvas.create_oval(
-            self.expl_x - self.expl_splash + 20 - self.expl_count,
-            self.expl_y - self.expl_splash + 20 - self.expl_count,
-            self.expl_x + self.expl_splash - 20 + self.expl_count,
-            self.expl_y + self.expl_splash - 20 + self.expl_count,
+            self.expl_x - self.expl_count,
+            self.expl_y - self.expl_count,
+            self.expl_x + self.expl_count,
+            self.expl_y + self.expl_count,
             fill='orange',
             outline='black',
             )
