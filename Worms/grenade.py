@@ -44,6 +44,7 @@ class GrenadeBullet(Bullet):
         self.elastic = 0.6
         self.splash = 20
         self.r = 5
+        self.drag_coef = 0.99
         self.x += self.r * math.cos(self.gun.angle)
         self.y += self.r * math.sin(self.gun.angle)
         self.color = 'red'
@@ -77,7 +78,7 @@ class GrenadeBullet(Bullet):
                     - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
         return(vy)
     
-    def is_collision(self, field):
+    def is_collision(self, field, wind):
         if (self.x + self.splash < 800
                 and self.x - self.splash > 0
                 and self.y + self.splash < 600
@@ -109,6 +110,9 @@ class GrenadeBullet(Bullet):
                             self.min_y_2= point_y
         if self.min_x_1 != -1 and self.min_x_2 != -1:
             self.collision()
+        else:
+            self.vx = (self.vx - wind) * self.drag_coef + wind
+            self.vy = self.vy * self.drag_coef
 
     def collision(self):
         if self.min_x_2 - self.min_x_1 == 0:
@@ -144,11 +148,11 @@ class GrenadeBullet(Bullet):
             self.vy -= abs(sin_a)
             print(sin_a)
 
-    def move(self, field):
+    def move(self, field, wind):
         self.vy += self.const['grav_const']
         self.x += self.vx
         self.y += self.vy
-        self.is_collision(field)
+        self.is_collision(field, wind)
         self.live -= 1
    
     def hit_test(self, obj):

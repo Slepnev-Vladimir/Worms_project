@@ -41,6 +41,7 @@ class BazookaBullet(Bullet):
         self.const = constant()
         self.splash = 20
         self.r = 5
+        self.drag_coef = 0.99
         self.live = 1000
         self.x += self.r * math.cos(self.gun.angle)
         self.y += self.r * math.sin(self.gun.angle)
@@ -77,12 +78,11 @@ class BazookaBullet(Bullet):
                     - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
         return(vy)
     
-    def move(self, field):
+    def move(self, field, wind):
         self.x += self.vx
         self.y += self.vy
         if self.vx != 0:
             self.angle = math.atan2(self.vy, self.vx)
-        print(self.angle)
         is_touch = 0
 
         if (self.x + self.splash < 800
@@ -101,6 +101,8 @@ class BazookaBullet(Bullet):
             self.live = 0
         else:
             self.vy += self.const['grav_const']
+            self.vx = (self.vx - wind) * self.drag_coef + wind
+            self.vy = self.vy * self.drag_coef
         
         self.live -= 1
 

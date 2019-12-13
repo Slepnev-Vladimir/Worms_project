@@ -22,7 +22,8 @@ class Worm:
         self.num = num
         self.live = 100
         self.r = 10                                 # if change, change move
-        self.x = (rnd(0, 800//self.const['worms_number'])
+        self.drag_coef = 0.99
+        self.x = (rnd(10, 800//self.const['worms_number'] - 10)
                 + num * (800//self.const['worms_number']))
         self.y = 20
         self.colors = ['blue', 'green', 'red', 'brown']
@@ -36,13 +37,13 @@ class Worm:
 
     def choose_bazooka(self, event):
         self.canvas.delete(self.gun.body_id)
-        self.gun = Bazooka(self)
+        self.gun = Bazooka(self, self.canvas)
 
     def choose_grenade(self, event):
         self.canvas.delete(self.gun.body_id)
         self.gun = Grenade(self, self.canvas)
     
-    def move(self, field):
+    def move(self, field, wind):
         self.x += self.vx
         self.y += self.vy
 
@@ -68,6 +69,8 @@ class Worm:
             self.vx = 0
         else:
             self.vy += self.const['grav_const']
+            self.vx = (self.vx - wind) * self.drag_coef + wind
+            self.vy = self.vy * self.drag_coef
 
         self.gun.move()
 

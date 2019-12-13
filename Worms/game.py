@@ -10,6 +10,8 @@ from worm import Worm
 
 from field import Field
 
+from cloud import Cloud
+
 from constant import constant
 
 import math
@@ -31,8 +33,10 @@ class Game():
         self.is_fild = 0
         self.worms = []
         self.guns = []
+        self.clouds = []
         self.bullets = []
         self.field.field_visual()
+        self.wind = rnd(-3, 3)
         self.tern = 0
         self.tern_end = 0
         self.worms_number = self.const['worms_number']
@@ -45,6 +49,9 @@ class Game():
 
         for num in range(self.const['worms_number']):
             self.worms.append(Worm(num, self.canvas))
+
+        for num in range(self.const['clouds_number']):
+            self.clouds.append(Cloud(num, self.canvas))
 
     def bang_check(self):
         num = 0
@@ -78,9 +85,11 @@ class Game():
 
     def next_tern(self):
         self.tern += 1
+        self.wind = rnd(-3, 3)
         self.tern = self.tern % self.worms_number
         for worm in self.worms:
             worm.energy = self.const['worm_energy']
+        print('wind = ', self.wind)
         print('next tern, tern = ', self.tern)
 
     def shot(self, event):
@@ -89,12 +98,18 @@ class Game():
 
     def motion(self):
         for num in range(self.worms_number):
-            self.worms[num].move(self.field_list)
+            self.worms[num].move(self.field_list, self.wind)
 
         for num in range(len(self.bullets)):
-            self.bullets[num].move(self.field_list)
+            self.bullets[num].move(self.field_list, self.wind)
+
+        for cloud in self.clouds:
+            cloud.move(self.field_list, self.wind)
 
     def visualization(self):
+        for cloud in self.clouds:
+            cloud.drowing()
+
         for num in range(self.worms_number):
             self.worms[num].drowing()
 
