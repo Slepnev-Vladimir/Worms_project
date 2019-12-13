@@ -2,11 +2,11 @@ from constant import constant
 
 from random import choice, randint as rnd
 
-from tkinter import Tk, Canvas, BOTH, mainloop, CENTER, Frame
-
 from bazooka import Bazooka, BazookaBullet
 
 from grenade import Grenade, GrenadeBullet
+
+from machinegun import Machinegun, MachinegunBullet
 
 import math
 
@@ -15,19 +15,21 @@ class Worm:
     def __init__(self, num, canvas):
         self.const = constant()
         self.canvas = canvas
+        
         self.is_touch = 0
         self.energy = self.const['worm_energy']
+        self.live = 100
+        self.num = num
+
         self.vx = 0
         self.vy = 0
-        self.num = num
-        self.live = 100
-        self.r = 10                                 # if change, change move
-        self.drag_coef = 0.99
         self.x = (rnd(10, 800//self.const['worms_number'] - 10)
                 + num * (800//self.const['worms_number']))
         self.y = 20
+        self.drag_coef = 0.99
+
+        self.r = 10                                 # if change, change move
         self.colors = ['blue', 'green', 'red', 'brown']
-        self.gun = Bazooka(self, self.canvas)
         self.body_id = self.canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
@@ -35,14 +37,24 @@ class Worm:
                 self.y + self.r,
                 fill=self.colors[self.num])
 
+        self.gun = Bazooka(self, self.canvas)
+        self.gun.init()
+
     def choose_bazooka(self, event):
         self.canvas.delete(self.gun.body_id)
         self.gun = Bazooka(self, self.canvas)
+        self.gun.init()
 
     def choose_grenade(self, event):
         self.canvas.delete(self.gun.body_id)
         self.gun = Grenade(self, self.canvas)
+        self.gun.init()
     
+    def choose_machinegun(self, event):
+        self.canvas.delete(self.gun.body_id)
+        self.gun = Machinegun(self, self.canvas)
+        self.gun.init()
+
     def move(self, field, wind):
         self.x += self.vx
         self.y += self.vy

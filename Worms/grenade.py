@@ -8,6 +8,9 @@ import math
 
 
 class Grenade(Gun):
+    def init(self):
+        self.rifle = 1
+
     def new_bullet(self, event, bullets):
         bullet = GrenadeBullet(self, self.canvas)
         bullet.init()
@@ -19,7 +22,11 @@ class Grenade(Gun):
         self.preparation = 0
         self.power = 0
         bullets += [bullet]
+        self.rifle -= 1
         return(bullets)
+
+    def reloading(self):
+        self.rifle = 1
 
     def energy_cost(self):
         return(600)
@@ -146,7 +153,6 @@ class GrenadeBullet(Bullet):
 
         if self.vy < abs(sin_a):
             self.vy -= abs(sin_a)
-            print(sin_a)
 
     def move(self, field, wind):
         self.vy += self.const['grav_const']
