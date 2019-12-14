@@ -186,3 +186,5 @@ class Worm:
         self.gun.drowing()
         if self.live < 0:
             self.canvas.delete(self.body_id)
+            self.canvas.delete(self.hp_id)
+            self.canvas.delete(self.losthp_id)

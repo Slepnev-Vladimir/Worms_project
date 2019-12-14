@@ -19,6 +19,7 @@ class Bazooka(Gun):
         bullet.vy = self.power * math.sin(self.angle)
         bullet.x += self.r * math.cos(self.angle)
         bullet.y += self.r * math.sin(self.angle)
+        bullet.power = self.power
         self.preparation = 0
         self.power = 0
         bullets += [bullet]
@@ -55,13 +56,25 @@ class BazookaBullet(Bullet):
         self.y += self.r * math.sin(self.gun.angle)
         self.angle = self.gun.angle
         self.color = 'blue'
+        self.fuel_length = 0
+        self.power = 0
         self.body_id = self.canvas.create_polygon(
                 (self.x + self.r * math.cos(self.angle),
                 self.y + self.r * math.sin(self.angle)),
-                (self.x - (math.cos(self.angle) + math.sin(self.angle)) * self.r,
-                self.y - (math.sin(self.angle) + math.cos(self.angle)) * self.r),
-                (self.x - (math.cos(self.angle) - math.sin(self.angle)) * self.r,
-                self.y - (math.sin(self.angle) + math.cos(self.angle)) * self.r)
+                (self.x - (math.cos(self.angle) + 0.5 * math.sin(self.angle)) * self.r *3,
+                self.y - (math.sin(self.angle) - 0.5 * math.cos(self.angle)) * self.r * 3),
+                (self.x - (math.cos(self.angle) - 0.5 * math.sin(self.angle)) * self.r * 3,
+                self.y - (math.sin(self.angle) + 0.5 * math.cos(self.angle)) * self.r * 3),
+                fill = self.color
+                )
+        self.fuel_id = self.canvas.create_polygon(
+                (self.x + self.r * math.cos(self.angle),
+                self.y + self.r * math.sin(self.angle)),
+                (self.x - (math.cos(self.angle) + 0.5 * math.sin(self.angle)) * self.r *3,
+                self.y - (math.sin(self.angle) - 0.5 * math.cos(self.angle)) * self.r * 3),
+                (self.x - (math.cos(self.angle) - 0.5 * math.sin(self.angle)) * self.r * 3,
+                self.y - (math.sin(self.angle) + 0.5 * math.cos(self.angle)) * self.r * 3),
+                fill = self.color
                 )
 
     def damage(self, worm):
@@ -118,13 +131,37 @@ class BazookaBullet(Bullet):
    
     def drowing(self):
         self.canvas.delete(self.body_id)
+        self.canvas.delete(self.fuel_id)
         self.body_id = self.canvas.create_polygon(
                 (self.x + self.r * math.cos(self.angle),
                 self.y + self.r * math.sin(self.angle)),
-                (self.x - (math.cos(self.angle) + 0.5 * math.sin(self.angle)) * self.r,
-                self.y - (math.sin(self.angle) - 0.5 * math.cos(self.angle)) * self.r),
-                (self.x - (math.cos(self.angle) - 0.5 * math.sin(self.angle)) * self.r,
-                self.y - (math.sin(self.angle) + 0.5 * math.cos(self.angle)) * self.r)
+                (self.x - (math.cos(self.angle) + 0.5 * math.sin(self.angle)) * self.r *3,
+                self.y - (math.sin(self.angle) - 0.5 * math.cos(self.angle)) * self.r * 3),
+                (self.x - (math.cos(self.angle) - 0.5 * math.sin(self.angle)) * self.r * 3,
+                self.y - (math.sin(self.angle) + 0.5 * math.cos(self.angle)) * self.r * 3),
+                fill = self.color
                 )
-        if self.live < 0:
+        if self.live < 990 and self.live > 0:
+            self.fuel_id = self.canvas.create_polygon(
+                    (self.x - self.r * math.cos(self.angle),
+                    self.y - self.r * math.sin(self.angle)),
+                    (self.x - self.r * math.cos(self.angle) - (math.cos(self.angle) + 0.1 * math.sin(self.angle)) * self.r * self.power,
+                    self.y - self.r * math.sin(self.angle) - (math.sin(self.angle) - 0.1 * math.cos(self.angle)) * self.r * self.power),
+                    (self.x - self.r * math.cos(self.angle) - (math.cos(self.angle) - 0.1 * math.sin(self.angle)) * self.r * self.power,
+                    self.y - self.r * math.sin(self.angle) - (math.sin(self.angle) + 0.1 * math.cos(self.angle)) * self.r * self.power),
+                    fill = 'orange'
+                    )
+        elif self.live > 0:
+            self.fuel_id = self.canvas.create_polygon(
+                    (self.x - self.r * math.cos(self.angle),
+                    self.y - self.r * math.sin(self.angle)),
+                    (self.x - self.r * math.cos(self.angle) - (math.cos(self.angle) + 0.1 * math.sin(self.angle)) * self.r * self.fuel_length * self.power,
+                    self.y - self.r * math.sin(self.angle) - (math.sin(self.angle) - 0.1 * math.cos(self.angle)) * self.r * self.fuel_length * self.power),
+                    (self.x - self.r * math.cos(self.angle) - (math.cos(self.angle) - 0.1 * math.sin(self.angle)) * self.r * self.fuel_length * self.power,
+                    self.y - self.r * math.sin(self.angle) - (math.sin(self.angle) + 0.1 * math.cos(self.angle)) * self.r * self.fuel_length * self.power),
+                    fill = 'orange'
+                    )
+            self.fuel_length += 0.1
+        else:
             self.canvas.delete(self.body_id)
+            self.canvas.delete(self.fuel_id)
