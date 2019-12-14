@@ -6,12 +6,13 @@ from constant import constant
 
 import math
 
+
 class Bazooka(Gun):
     def init(self):
         self.rifle = 1
 
     def new_bullet(self, event, bullets):
-        bullet = BazookaBullet(self, self.canvas)
+        bullet = BazookaBullet(self, self.canvas, self.game)
         bullet.init()
         self.angle = math.atan2((event.y - bullet.y), (event.x - bullet.x))
         bullet.vx = self.power * math.cos(self.angle)

@@ -12,6 +12,8 @@ from field import Field
 
 from cloud import Cloud
 
+from explosion import Explosion
+
 from constant import constant
 
 import math
@@ -35,6 +37,7 @@ class Game():
         self.guns = []
         self.clouds = []
         self.bullets = []
+        self.boom = []
         self.field.field_visual()
         self.wind = rnd(-3, 3)
         self.tern = 0
@@ -43,14 +46,8 @@ class Game():
         self.is_shot = 0
         self.event = 0
 
-        self.expl_count = 0
-        self.expl_x = 0
-        self.expl_y = 0
-        self.explode = 0
-        self.expl_splash = 0
-
         for num in range(self.const['worms_number']):
-            self.worms.append(Worm(num, self.canvas))
+            self.worms.append(Worm(num, self.canvas, self))
 
         for num in range(self.const['clouds_number']):
             self.clouds.append(Cloud(num, self.canvas))
@@ -125,6 +122,10 @@ class Game():
 
         for bullet in self.bullets:
             bullet.drowing()
+            
+        for expl in self.boom:
+            expl.drowing()
+            self.boom = [active for active in self.boom if not active.count < 0]
 
     def shooting_processing(self):
         self.canvas.bind('<Motion>', self.worms[self.tern].gun.targetting)

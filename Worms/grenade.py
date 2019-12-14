@@ -12,7 +12,7 @@ class Grenade(Gun):
         self.rifle = 1
 
     def new_bullet(self, event, bullets):
-        bullet = GrenadeBullet(self, self.canvas)
+        bullet = GrenadeBullet(self, self.canvas, self.game)
         bullet.init()
         self.angle = math.atan2((event.y - bullet.y), (event.x - bullet.x))
         bullet.vx = self.power * math.cos(self.angle)

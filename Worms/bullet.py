@@ -1,7 +1,10 @@
+from explosion import Explosion
+
 class Bullet():
-    def __init__(self, gun, canvas):
+    def __init__(self, gun, canvas, game):
         self.canvas = canvas
         self.gun = gun
+        self.game = game
         self.splash = 0
         self.x = gun.x
         self.y = gun.y
@@ -18,12 +21,7 @@ class Bullet():
             h = int((self.splash**2 - abs(int(self.x) - point_x)**2)**0.5)
             for point_y in range(int(self.y) - h, int(self.y) + h):
                 field[point_x, point_y] = 0
-        self.body_id = self.canvas.create_oval(
-                self.x - self.splash,
-                self.y - self.splash,
-                self.x + self.splash,
-                self.y + self.splash,
-                fill='lightblue',
-                outline='lightblue',
-                )
+        new_boom = Explosion(self.canvas)
+        new_boom.start(self)
+        self.game.boom.append(new_boom)
         return(field)

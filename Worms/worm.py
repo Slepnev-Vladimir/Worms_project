@@ -12,9 +12,10 @@ import math
 
 
 class Worm:
-    def __init__(self, num, canvas):
+    def __init__(self, num, canvas, game):
         self.const = constant()
         self.canvas = canvas
+        self.game = game
         
         self.is_touch = 0
         self.energy = self.const['worm_energy']
@@ -26,7 +27,7 @@ class Worm:
         self.x = (rnd(10, 800//self.const['worms_number'] - 10)
                 + num * (800//self.const['worms_number']))
         self.y = 20
-        self.drag_coef = 0.99
+        self.drag_coef = 1
 
         self.r = 10                                 # if change, change move
         self.colors = ['blue', 'green', 'red', 'brown']
@@ -37,22 +38,22 @@ class Worm:
                 self.y + self.r,
                 fill=self.colors[self.num])
 
-        self.gun = Bazooka(self, self.canvas)
+        self.gun = Bazooka(self, self.canvas, self.game)
         self.gun.init()
 
     def choose_bazooka(self, event):
         self.canvas.delete(self.gun.body_id)
-        self.gun = Bazooka(self, self.canvas)
+        self.gun = Bazooka(self, self.canvas, self.game)
         self.gun.init()
 
     def choose_grenade(self, event):
         self.canvas.delete(self.gun.body_id)
-        self.gun = Grenade(self, self.canvas)
+        self.gun = Grenade(self, self.canvas, self.game)
         self.gun.init()
     
     def choose_machinegun(self, event):
         self.canvas.delete(self.gun.body_id)
-        self.gun = Machinegun(self, self.canvas)
+        self.gun = Machinegun(self, self.canvas, self.game)
         self.gun.init()
 
     def move(self, field, wind):

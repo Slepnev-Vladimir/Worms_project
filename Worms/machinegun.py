@@ -16,7 +16,7 @@ class Machinegun(Gun):
         self.rifle = 10
 
     def new_bullet(self, event, bullets):
-        bullet = MachinegunBullet(self, self.canvas)
+        bullet = MachinegunBullet(self, self.canvas, self.game)
         bullet.init()
         self.angle = (math.atan2((event.y - bullet.y), (event.x - bullet.x))
                 + rnd(-2, 2) / 10)                          # +- 5 deg

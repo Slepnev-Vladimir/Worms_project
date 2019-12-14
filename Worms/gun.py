@@ -1,9 +1,10 @@
 import math
 
 class Gun():
-    def __init__(self, worm, canvas):
+    def __init__(self, worm, canvas, game):
         self.canvas = canvas
         self.worm = worm
+        self.game = game
         self.live = self.worm.live
         self.power = 0
         self.preparation = 0
