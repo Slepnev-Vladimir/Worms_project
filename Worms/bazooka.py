@@ -104,8 +104,6 @@ class BazookaBullet(Bullet):
                         is_touch += field[point_x, point_y]
 
         if is_touch != 0:
-            self.vy = 0
-            self.vx = 0
             self.live = 0
         else:
             self.vy += self.const['grav_const']

@@ -76,7 +76,7 @@ class Worm:
             self.live -= 1
         
         if self.is_touch != 0:
-            if self.vy**2 + self.vx**2 > 30:
+            if self.vy**2 + self.vx**2 > 8:
                 self.live -= int((self.vx**2 + self.vy**2)**0.5)
             self.vy = 0
             self.vx = 0
@@ -89,60 +89,60 @@ class Worm:
 
     def move_left(self, event):
         if self.is_touch != 0 and self.energy >= 4:
-            self.vx -= 0.4
-            self.vy -= 0.4
+            self.vx -= 0.3
+            self.vy -= 0.3
             self.energy -= 4
             print('energy = ', self.energy)
 
     def move_right(self, event):
         if self.is_touch != 0 and self.energy >= 4:
-            self.vx += 0.4
-            self.vy -= 0.4
+            self.vx += 0.3
+            self.vy -= 0.3
             self.energy -= 4
             print('energy = ', self.energy)
 
     def jump_left(self, event):
         if self.is_touch == 0:
             if self.energy >= 300:
-                self.vx -= 2
-                self.vy -= 2
+                self.vx -= 1.5
+                self.vy -= 1.5
                 self.energy -= 300
         elif self.energy >= 100:
             self.energy -= 100
-            self.vx -= 2
-            self.vy -= 2
+            self.vx -= 1.5
+            self.vy -= 1.5
         print('energy = ', self.energy)
 
     def jump_right(self, event):
         if self.is_touch == 0:
             if self.energy >= 300:
-                self.vx += 2
-                self.vy -= 2
+                self.vx += 1.5
+                self.vy -= 1.5
                 self.energy -= 300
         elif self.energy >= 100:
             self.energy -= 100
-            self.vx += 2
-            self.vy -= 2
+            self.vx += 1.5
+            self.vy -= 1.5
         print('energy = ', self.energy)
 
     def jump_up(self, event):
         if self.is_touch == 0:
             if self.energy >= 300:
-                self.vy -= 2
+                self.vy -= 1.5
                 self.energy -= 300
         elif self.energy >= 100:
             self.energy -= 100
-            self.vy -= 2
+            self.vy -= 1.5
         print('energy = ', self.energy)
 
     def jump_down(self, event):
         if self.is_touch == 0:
             if self.energy >= 300:
-                self.vy += 2
+                self.vy += 1.5
                 self.energy -= 300
         elif self.energy >= 100:
             self.energy -= 100
-            self.vy += 2
+            self.vy += 1.5
         print('energy = ', self.energy)
 
     def drowing(self):

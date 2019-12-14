@@ -53,7 +53,7 @@ class MachinegunBullet(Bullet):
         self.const = constant()
         self.splash = 3
         self.r = 2
-        self.drag_coef = 1
+        self.drag_coef = 0.997
         self.live = 1000
         self.x += self.r * math.cos(self.gun.angle)
         self.y += self.r * math.sin(self.gun.angle)
@@ -108,10 +108,11 @@ class MachinegunBullet(Bullet):
                         is_touch += field[point_x, point_y]
 
         if is_touch != 0:
-            self.vy = 0
-            self.vx = 0
             self.live = 0
-
+        else:
+            self.vy += self.const['grav_const'] / 2
+            self.vx = (self.vx - wind) * self.drag_coef + wind
+            self.vy = self.vy * self.drag_coef
         self.live -= 1
 
     def hit_test(self, obj):
