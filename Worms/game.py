@@ -74,7 +74,8 @@ class Game():
             if self.worms[num].live <= 0:
                 self.worms.pop(num)
                 self.worms_number -= 1
-                self.tern -= 1
+                while self.tern >= len(self.worms):
+                    self.tern -= 1
             num += 1
     
     def is_hit(self):

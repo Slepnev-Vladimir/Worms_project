@@ -71,7 +71,7 @@ class MachinegunBullet(Bullet):
     def damage(self, worm):
         live = worm.live
         if (self.x - worm.x) ** 2 + (self.y - worm.y) ** 2 <= (self.r + worm.r) ** 2:
-            live -= 6
+            live -= 5
         return(live)
     
     def charge_x(self, worm):

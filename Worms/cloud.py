@@ -15,7 +15,7 @@ class Cloud:
         self.vy = 0
         self.num = num
         self.r = 10                                 # if change, change move
-        self.drag_coef = 0
+        self.drag_coef = 0.99
         self.color = 'white'
         self.x = (rnd(0, 800//self.const['clouds_number'])
                 + num * (800//self.const['clouds_number']))

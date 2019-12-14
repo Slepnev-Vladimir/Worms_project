@@ -24,7 +24,7 @@ class Worm:
 
         self.vx = 0
         self.vy = 0
-        self.x = (rnd(10, 800//self.const['worms_number'] - 10)
+        self.x = (rnd(20, 800//self.const['worms_number'] - 20)
                 + num * (800//self.const['worms_number']))
         self.y = 20
         self.drag_coef = 1
