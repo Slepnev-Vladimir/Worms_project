@@ -20,12 +20,34 @@ class Cloud:
         self.x = (rnd(0, 800//self.const['clouds_number'])
                 + num * (800//self.const['clouds_number']))
         self.y = rnd(0, 50)
-        self.body_id = self.canvas.create_oval(
+        self.body_id1 = self.canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
                 self.x + self.r,
                 self.y + self.r,
-                fill=self.color)
+                fill=self.color,
+                outline=self.color)
+        self.body_id2 = self.canvas.create_oval(
+                self.x - self.r - 10,
+                self.y - self.r,
+                self.x + self.r - 10,
+                self.y + self.r,
+                fill=self.color,
+                outline=self.color)
+        self.body_id3 = self.canvas.create_oval(
+                self.x - self.r - 5,
+                self.y - self.r - 5,
+                self.x + self.r - 5,
+                self.y + self.r - 5,
+                fill=self.color,
+                outline=self.color)
+        self.body_id4 = self.canvas.create_oval(
+                self.x - self.r + 10,
+                self.y - self.r,
+                self.x + self.r + 10,
+                self.y + self.r,
+                fill=self.color,
+                outline=self.color)
 
     def move(self, field, wind):
         self.x += self.vx
@@ -39,10 +61,35 @@ class Cloud:
         self.drowing()
 
     def drowing(self):
-        self.canvas.delete(self.body_id)
-        self.body_id = self.canvas.create_oval(
+        self.canvas.delete(self.body_id1)
+        self.canvas.delete(self.body_id2)
+        self.canvas.delete(self.body_id3)
+        self.canvas.delete(self.body_id4)
+        self.body_id1 = self.canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
                 self.x + self.r,
                 self.y + self.r,
-                fill=self.color)
+                fill=self.color,
+                outline=self.color)
+        self.body_id2 = self.canvas.create_oval(
+                self.x - self.r - 10,
+                self.y - self.r,
+                self.x + self.r - 10,
+                self.y + self.r,
+                fill=self.color,
+                outline=self.color)
+        self.body_id3 = self.canvas.create_oval(
+                self.x - self.r - 5,
+                self.y - self.r - 5,
+                self.x + self.r - 5,
+                self.y + self.r - 5,
+                fill=self.color,
+                outline=self.color)
+        self.body_id4 = self.canvas.create_oval(
+                self.x - self.r + 10,
+                self.y - self.r,
+                self.x + self.r + 10,
+                self.y + self.r,
+                fill=self.color,
+                outline=self.color)

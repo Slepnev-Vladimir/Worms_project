@@ -24,7 +24,7 @@ class Worm:
 
         self.vx = 0
         self.vy = 0
-        self.x = (rnd(20, 800//self.const['worms_number'] - 20)
+        self.x = (rnd(10, 800//self.const['worms_number'] - 10)
                 + num * (800//self.const['worms_number']))
         self.y = 20
         self.drag_coef = 1
@@ -37,6 +37,20 @@ class Worm:
                 self.x + self.r,
                 self.y + self.r,
                 fill=self.colors[self.num])
+        self.hp_id = self.canvas.create_rectangle(self.x - 10,
+                                                  self.y - 15,
+                                                  self.x + 10 * self.live / 100,
+                                                  self.y - 10,
+                                                  fill='chartreuse2',
+                                                  outline='black'
+                                                  )
+        self.losthp_id = self.canvas.create_rectangle(self.x + 10 * self.live / 100,
+                                                  self.y - 15,
+                                                  self.x + 10,
+                                                  self.y - 10,
+                                                  fill='black',
+                                                  outline='black'
+                                                  )
 
         self.gun = Bazooka(self, self.canvas, self.game)
         self.gun.init()
@@ -76,7 +90,7 @@ class Worm:
             self.live -= 1
         
         if self.is_touch != 0:
-            if self.vy**2 + self.vx**2 > 8:
+            if self.vy**2 + self.vx**2 > 30:
                 self.live -= int((self.vx**2 + self.vy**2)**0.5)
             self.vy = 0
             self.vx = 0
@@ -89,70 +103,86 @@ class Worm:
 
     def move_left(self, event):
         if self.is_touch != 0 and self.energy >= 4:
-            self.vx -= 0.3
-            self.vy -= 0.3
+            self.vx -= 0.4
+            self.vy -= 0.4
             self.energy -= 4
             print('energy = ', self.energy)
 
     def move_right(self, event):
         if self.is_touch != 0 and self.energy >= 4:
-            self.vx += 0.3
-            self.vy -= 0.3
+            self.vx += 0.4
+            self.vy -= 0.4
             self.energy -= 4
             print('energy = ', self.energy)
 
     def jump_left(self, event):
         if self.is_touch == 0:
             if self.energy >= 300:
-                self.vx -= 1.5
-                self.vy -= 1.5
+                self.vx -= 2
+                self.vy -= 2
                 self.energy -= 300
         elif self.energy >= 100:
             self.energy -= 100
-            self.vx -= 1.5
-            self.vy -= 1.5
+            self.vx -= 2
+            self.vy -= 2
         print('energy = ', self.energy)
 
     def jump_right(self, event):
         if self.is_touch == 0:
             if self.energy >= 300:
-                self.vx += 1.5
-                self.vy -= 1.5
+                self.vx += 2
+                self.vy -= 2
                 self.energy -= 300
         elif self.energy >= 100:
             self.energy -= 100
-            self.vx += 1.5
-            self.vy -= 1.5
+            self.vx += 2
+            self.vy -= 2
         print('energy = ', self.energy)
 
     def jump_up(self, event):
         if self.is_touch == 0:
             if self.energy >= 300:
-                self.vy -= 1.5
+                self.vy -= 2
                 self.energy -= 300
         elif self.energy >= 100:
             self.energy -= 100
-            self.vy -= 1.5
+            self.vy -= 2
         print('energy = ', self.energy)
 
     def jump_down(self, event):
         if self.is_touch == 0:
             if self.energy >= 300:
-                self.vy += 1.5
+                self.vy += 2
                 self.energy -= 300
         elif self.energy >= 100:
             self.energy -= 100
-            self.vy += 1.5
+            self.vy += 2
         print('energy = ', self.energy)
 
     def drowing(self):
         self.canvas.delete(self.body_id)
+        self.canvas.delete(self.hp_id)
+        self.canvas.delete(self.losthp_id)
         self.body_id = self.canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
                 self.x + self.r,
                 self.y + self.r,
                 fill=self.colors[self.num])
+        self.hp_id = self.canvas.create_rectangle(self.x - 10,
+                                                  self.y - 15,
+                                                  self.x + 10,
+                                                  self.y - 10,
+                                                  fill='chartreuse2',
+                                                  outline='black'
+                                                  )
+        self.losthp_id = self.canvas.create_rectangle(self.x + 10 * self.live / 100,
+                                                  self.y - 15,
+                                                  self.x + 10,
+                                                  self.y - 10,
+                                                  fill='black',
+                                                  outline='black'
+                                                  )
         self.gun.drowing()
         if self.live < 0:
             self.canvas.delete(self.body_id)

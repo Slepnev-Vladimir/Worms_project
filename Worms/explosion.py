@@ -21,6 +21,6 @@ class Explosion():
         else:
             self.body_id = self.canvas.create_oval((self.x - self.count, self.y - self.count),
                                             (self.x + self.count, self.y + self.count),
-                                            fill = 'lightblue', outline = 'lightblue'
+                                            fill = 'skyblue', outline = 'skyblue'
                                             )
             self.count = -1

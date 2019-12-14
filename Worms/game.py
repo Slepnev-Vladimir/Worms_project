@@ -27,7 +27,7 @@ class Game():
         self.root = Tk()
         self.fr = Frame(self.root)
         self.root.geometry('800x600')
-        self.canvas = Canvas(self.root, bg='lightblue')
+        self.canvas = Canvas(self.root, bg='skyblue')
         self.canvas.pack(fill=BOTH, expand=1)
 
         self.field = Field(self.canvas)
@@ -74,8 +74,7 @@ class Game():
             if self.worms[num].live <= 0:
                 self.worms.pop(num)
                 self.worms_number -= 1
-                while self.tern >= len(self.worms):
-                    self.tern -= 1
+                self.tern -= 1
             num += 1
     
     def is_hit(self):
