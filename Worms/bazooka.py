@@ -53,15 +53,15 @@ class BazookaBullet(Bullet):
         self.live = 1000
         self.x += self.r * math.cos(self.gun.angle)
         self.y += self.r * math.sin(self.gun.angle)
-        if self.vx != 0:
-            self.angle = math.atan2(self.vy, self.vx)
+        self.angle = self.gun.angle
         self.color = 'blue'
-        self.body_id = self.canvas.create_oval(
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r,
-                fill=self.color,
+        self.body_id = self.canvas.create_polygon(
+                (self.x + self.r * math.cos(self.angle),
+                self.y + self.r * math.sin(self.angle)),
+                (self.x - (math.cos(self.angle) + math.sin(self.angle)) * self.r,
+                self.y - (math.sin(self.angle) + math.cos(self.angle)) * self.r),
+                (self.x - (math.cos(self.angle) - math.sin(self.angle)) * self.r,
+                self.y - (math.sin(self.angle) + math.cos(self.angle)) * self.r)
                 )
 
     def damage(self, worm):
@@ -118,12 +118,13 @@ class BazookaBullet(Bullet):
    
     def drowing(self):
         self.canvas.delete(self.body_id)
-        self.body_id = self.canvas.create_oval(
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r,
-                fill=self.color,
+        self.body_id = self.canvas.create_polygon(
+                (self.x + self.r * math.cos(self.angle),
+                self.y + self.r * math.sin(self.angle)),
+                (self.x - (math.cos(self.angle) + 0.5 * math.sin(self.angle)) * self.r,
+                self.y - (math.sin(self.angle) - 0.5 * math.cos(self.angle)) * self.r),
+                (self.x - (math.cos(self.angle) - 0.5 * math.sin(self.angle)) * self.r,
+                self.y - (math.sin(self.angle) + 0.5 * math.cos(self.angle)) * self.r)
                 )
         if self.live < 0:
             self.canvas.delete(self.body_id)
