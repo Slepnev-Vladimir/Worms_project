@@ -20,6 +20,7 @@ class Bazooka(Gun):
         bullet.x += self.r * math.cos(self.angle)
         bullet.y += self.r * math.sin(self.angle)
         bullet.power = self.power
+        bullet.drag_coef = (bullet.power / bullet.maxpower) * 0.05 + 0.95
         self.preparation = 0
         self.power = 0
         bullets += [bullet]
@@ -58,6 +59,7 @@ class BazookaBullet(Bullet):
         self.color = 'blue'
         self.fuel_length = 0
         self.power = 0
+        self.maxpower = 10
         self.body_id = self.canvas.create_polygon(
                 (self.x + self.r * math.cos(self.angle),
                 self.y + self.r * math.sin(self.angle)),
