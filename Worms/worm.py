@@ -39,12 +39,12 @@ class Worm:
                 fill=self.colors[self.num])
         self.hp_id = self.canvas.create_rectangle(self.x - 10,
                                                   self.y - 15,
-                                                  self.x + 10 * self.live / 100,
+                                                  self.x - 10 + 20 * self.live / 100,
                                                   self.y - 10,
                                                   fill='chartreuse2',
                                                   outline='black'
                                                   )
-        self.losthp_id = self.canvas.create_rectangle(self.x + 10 * self.live / 100,
+        self.losthp_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.live / 100,
                                                   self.y - 15,
                                                   self.x + 10,
                                                   self.y - 10,
@@ -171,12 +171,12 @@ class Worm:
                 fill=self.colors[self.num])
         self.hp_id = self.canvas.create_rectangle(self.x - 10,
                                                   self.y - 15,
-                                                  self.x + 10,
+                                                  self.x - 10 + 20 * self.live / 100,
                                                   self.y - 10,
                                                   fill='chartreuse2',
                                                   outline='black'
                                                   )
-        self.losthp_id = self.canvas.create_rectangle(self.x + 10 * self.live / 100,
+        self.losthp_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.live / 100,
                                                   self.y - 15,
                                                   self.x + 10,
                                                   self.y - 10,
