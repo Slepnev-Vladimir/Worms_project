@@ -13,13 +13,13 @@ import math
 class Machinegun(Gun):
     def init(self):
         self.const = constant()
-        self.rifle = 10
+        self.rifle = 50
 
     def new_bullet(self, event, bullets):
         bullet = MachinegunBullet(self, self.canvas, self.game)
         bullet.init()
         self.angle = (math.atan2((event.y - bullet.y), (event.x - bullet.x))
-                + rnd(-2, 2) / 10)                          # +- 5 deg
+                + rnd(-15, 15) / 100)
         bullet.vx = 5 * math.cos(self.angle)
         bullet.vy = 5 * math.sin(self.angle)
         bullet.x += self.r * math.cos(self.angle)
@@ -30,7 +30,7 @@ class Machinegun(Gun):
         return(bullets)
 
     def reloading(self):
-        self.rifle = 10
+        self.rifle = 50
 
     def energy_cost(self):
         return(600)
@@ -51,7 +51,7 @@ class Machinegun(Gun):
 class MachinegunBullet(Bullet):
     def init(self):
         self.const = constant()
-        self.splash = 3
+        self.splash = 5
         self.r = 2
         self.drag_coef = 0.997
         self.live = 1000
@@ -71,7 +71,7 @@ class MachinegunBullet(Bullet):
     def damage(self, worm):
         live = worm.live
         if (self.x - worm.x) ** 2 + (self.y - worm.y) ** 2 <= (self.r + worm.r) ** 2:
-            live -= 5
+            live -= 1
         return(live)
     
     def charge_x(self, worm):

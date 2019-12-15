@@ -1,5 +1,8 @@
 from explosion import Explosion
 
+import math
+
+
 class Bullet():
     def __init__(self, gun, canvas, game):
         self.canvas = canvas
@@ -18,7 +21,7 @@ class Bullet():
     def collapse(self, field):
         for point_x in range(int(self.x) - self.splash,
                 int(self.x) + self.splash):
-            h = int((self.splash**2 - abs(int(self.x) - point_x)**2)**0.5)
+            h = math.ceil((self.splash**2 - abs(int(self.x) - point_x)**2)**0.5)
             for point_y in range(int(self.y) - h, int(self.y) + h):
                 field[point_x, point_y] = 0
         new_boom = Explosion(self.canvas)
