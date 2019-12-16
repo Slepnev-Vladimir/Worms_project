@@ -51,7 +51,20 @@ class Worm:
                                                   fill='black',
                                                   outline='black'
                                                   )
-
+        self.energy_id = self.canvas.create_rectangle(self.x - 10,
+                                                  self.y - 22,
+                                                  self.x - 10 + 20 * self.energy / self.const['worm_energy'],
+                                                  self.y - 17,
+                                                  fill='royalblue2',
+                                                  outline='black'
+                                                  )
+        self.lostenergy_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.energy / self.const['worm_energy'],
+                                                  self.y - 22,
+                                                  self.x + 10,
+                                                  self.y - 17,
+                                                  fill='black',
+                                                  outline='black'
+                                                  )
         self.gun = Bazooka(self, self.canvas, self.game)
         self.gun.init()
 
@@ -163,6 +176,8 @@ class Worm:
         self.canvas.delete(self.body_id)
         self.canvas.delete(self.hp_id)
         self.canvas.delete(self.losthp_id)
+        self.canvas.delete(self.energy_id)
+        self.canvas.delete(self.lostenergy_id)
         self.body_id = self.canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
@@ -183,8 +198,24 @@ class Worm:
                                                   fill='black',
                                                   outline='black'
                                                   )
+        self.energy_id = self.canvas.create_rectangle(self.x - 10,
+                                                  self.y - 22,
+                                                  self.x - 10 + 20 * self.energy / self.const['worm_energy'],
+                                                  self.y - 17,
+                                                  fill='royalblue2',
+                                                  outline='black'
+                                                  )
+        self.lostenergy_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.energy / self.const['worm_energy'],
+                                                  self.y - 22,
+                                                  self.x + 10,
+                                                  self.y - 17,
+                                                  fill='black',
+                                                  outline='black'
+                                                  )
         self.gun.drowing()
         if self.live < 0:
             self.canvas.delete(self.body_id)
             self.canvas.delete(self.hp_id)
             self.canvas.delete(self.losthp_id)
+            self.canvas.delete(self.energy_id)
+            self.canvas.delete(self.lostenergy_id)

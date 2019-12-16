@@ -44,7 +44,7 @@ class Machinegun(Gun):
                 self.y + max(self.power, 10) * math.sin(self.angle),
                 width=7,
                 )
-        if self.live < 0:
+        if self.worm.live < 0:
             self.canvas.delete(self.body_id)
 
 
