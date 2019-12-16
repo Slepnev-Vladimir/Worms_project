@@ -20,9 +20,9 @@ class Bullet():
 
     def collapse(self, field):
         for point_x in range(int(self.x) - self.splash,
-                int(self.x) + self.splash):
+                math.ceil(self.x) + self.splash):
             h = math.ceil((self.splash**2 - abs(int(self.x) - point_x)**2)**0.5)
-            for point_y in range(int(self.y) - h, int(self.y) + h):
+            for point_y in range(int(self.y) - h, math.ceil(self.y) + h):
                 field[point_x, point_y] = 0
         new_boom = Explosion(self.canvas)
         new_boom.start(self)

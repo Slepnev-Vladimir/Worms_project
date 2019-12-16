@@ -77,7 +77,7 @@ class MachinegunBullet(Bullet):
     def charge_x(self, worm):
         vx = worm.vx
         if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
-            vx += 0.1 * (self.splash + worm.r - ((self.x - worm.x)**2
+            vx += 0.02 * (self.splash + worm.r - ((self.x - worm.x)**2
                     + (self.y - worm.y)**2)**0.5) * (worm.x - self.x) / (((self.x
                     - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
         return(vx)
@@ -85,7 +85,7 @@ class MachinegunBullet(Bullet):
     def charge_y(self, worm):
         vy = worm.vy
         if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
-            vy += 0.1 * (self.splash + worm.r - ((self.x - worm.x)**2
+            vy += 0.02 * (self.splash + worm.r - ((self.x - worm.x)**2
                     + (self.y - worm.y)**2)**0.5) * (self.x - worm.x) / (((self.x
                     - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
         return(vy)
