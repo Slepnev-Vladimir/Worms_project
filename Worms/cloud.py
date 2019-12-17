@@ -1,10 +1,7 @@
-from random import choice, randint as rnd
-
-from tkinter import Tk, Canvas, BOTH, mainloop, CENTER, Frame
+from random import randint as rnd
 
 from constant import constant
 
-import math
 
 
 class Cloud:

@@ -2,8 +2,6 @@ from gun import Gun
 
 from random import randint as rnd
 
-from tkinter import Tk
-
 from bullet import Bullet
 
 from constant import constant

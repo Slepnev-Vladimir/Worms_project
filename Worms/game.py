@@ -1,10 +1,6 @@
-from random import choice, randint as rnd
+from random import randint as rnd
 
-from tkinter import Tk, Canvas, BOTH, mainloop, CENTER, Frame
-
-from bazooka import Bazooka, BazookaBullet
-
-from grenade import Grenade, GrenadeBullet
+from tkinter import Tk, Canvas, mainloop, Frame, BOTH
 
 from worm import Worm
 
@@ -15,10 +11,6 @@ from cloud import Cloud
 from explosion import Explosion
 
 from constant import constant
-
-import math
-
-import numpy
 
 
 class Game():
@@ -45,9 +37,20 @@ class Game():
         self.worms_number = self.const['worms_number']
         self.is_shot = 0
         self.event = 0
-
-        for num in range(self.const['worms_number']):
-            self.worms.append(Worm(num, self.canvas, self))
+        
+        if len(self.const) < len(self.field.start_position):
+            print('to many worms for this map')
+        else:
+            for num in range(self.const['worms_number']):
+                self.worms.append(
+                        Worm(
+                            self.field.start_position[num][0],
+                            self.field.start_position[num][1],
+                            num,
+                            self.canvas,
+                            self,
+                            )
+                        )
 
         for num in range(self.const['clouds_number']):
             self.clouds.append(Cloud(num, self.canvas))

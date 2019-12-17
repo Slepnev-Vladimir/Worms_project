@@ -1,5 +1,6 @@
 import math
 
+
 class Gun():
     def __init__(self, worm, canvas, game):
         self.canvas = canvas

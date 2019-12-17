@@ -19,7 +19,8 @@ class Bullet():
         self.activation = 0
 
     def collapse(self, field):
-        for point_x in range(int(self.x) - self.splash,
+        for point_x in range(
+                int(self.x) - self.splash,
                 math.ceil(self.x) + self.splash):
             h = math.ceil((self.splash**2 - abs(int(self.x) - point_x)**2)**0.5)
             for point_y in range(int(self.y) - h, math.ceil(self.y) + h):

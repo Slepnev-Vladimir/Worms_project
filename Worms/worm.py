@@ -1,18 +1,16 @@
 from constant import constant
 
-from random import choice, randint as rnd
+from random import randint as rnd
 
-from bazooka import Bazooka, BazookaBullet
+from bazooka import Bazooka
 
-from grenade import Grenade, GrenadeBullet
+from grenade import Grenade
 
-from machinegun import Machinegun, MachinegunBullet
-
-import math
+from machinegun import Machinegun
 
 
 class Worm:
-    def __init__(self, num, canvas, game):
+    def __init__(self, x, y, num, canvas, game):
         self.const = constant()
         self.canvas = canvas
         self.game = game
@@ -24,9 +22,8 @@ class Worm:
 
         self.vx = 0
         self.vy = 0
-        self.x = (rnd(10, 800//self.const['worms_number'] - 10)
-                + num * (800//self.const['worms_number']))
-        self.y = 20
+        self.x = x
+        self.y = y
         self.drag_coef = 1
 
         self.r = 10                                 # if change, change move
