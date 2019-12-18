@@ -127,6 +127,10 @@ class Game():
             cloud.drowing()
 
         for num in range(self.worms_number):
+            if self.tern == num:
+                self.worms[num].outline = 'white'
+            else:
+                self.worms[num].outline = 'black'
             self.worms[num].drowing()
 
         for bullet in self.bullets:

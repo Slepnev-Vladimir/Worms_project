@@ -8,6 +8,8 @@ from grenade import Grenade
 
 from machinegun import Machinegun
 
+from explosive_grenade import ExplosiveGrenade
+
 
 class Worm:
     def __init__(self, x, y, num, canvas, game):
@@ -28,6 +30,9 @@ class Worm:
 
         self.r = 10                                 # if change, change move
         self.colors = ['blue', 'green', 'red', 'brown']
+        self.gun = Bazooka(self, self.canvas, self.game)
+        self.gun.init()
+        
         self.body_id = self.canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
@@ -62,8 +67,13 @@ class Worm:
                                                   fill='black',
                                                   outline='black'
                                                   )
-        self.gun = Bazooka(self, self.canvas, self.game)
-        self.gun.init()
+        self.required_energy_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.gun.energy_cost() / self.const['worm_energy'],
+                                                  self.y - 22,
+                                                  self.x - 10 + 20 * self.gun.energy_cost() / self.const['worm_energy'],
+                                                  self.y - 17,
+                                                  fill='white',
+                                                  outline='white'
+                                                  )
 
     def choose_bazooka(self, event):
         self.canvas.delete(self.gun.body_id)
@@ -78,6 +88,11 @@ class Worm:
     def choose_machinegun(self, event):
         self.canvas.delete(self.gun.body_id)
         self.gun = Machinegun(self, self.canvas, self.game)
+        self.gun.init()
+        
+    def choose_explosive_grenade(self, event):
+        self.canvas.delete(self.gun.body_id)
+        self.gun = ExplosiveGrenade(self, self.canvas, self.game)
         self.gun.init()
 
     def move(self, field, wind):
@@ -175,12 +190,14 @@ class Worm:
         self.canvas.delete(self.losthp_id)
         self.canvas.delete(self.energy_id)
         self.canvas.delete(self.lostenergy_id)
+        self.canvas.delete(self.required_energy_id)
         self.body_id = self.canvas.create_oval(
                 self.x - self.r,
                 self.y - self.r,
                 self.x + self.r,
                 self.y + self.r,
-                fill=self.colors[self.num])
+                fill=self.colors[self.num],
+                outline=self.outline)
         self.hp_id = self.canvas.create_rectangle(self.x - 10,
                                                   self.y - 15,
                                                   self.x - 10 + 20 * self.live / 100,
@@ -209,6 +226,13 @@ class Worm:
                                                   fill='black',
                                                   outline='black'
                                                   )
+        self.required_energy_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.gun.energy_cost() / self.const['worm_energy'],
+                                                  self.y - 22,
+                                                  self.x - 10 + 20 * self.gun.energy_cost() / self.const['worm_energy'],
+                                                  self.y - 17,
+                                                  fill='white',
+                                                  outline='white'
+                                                  )
         self.gun.drowing()
         if self.live < 0:
             self.canvas.delete(self.body_id)
@@ -216,3 +240,4 @@ class Worm:
             self.canvas.delete(self.losthp_id)
             self.canvas.delete(self.energy_id)
             self.canvas.delete(self.lostenergy_id)
+            self.canvas.delete(self.required_energy_id)
