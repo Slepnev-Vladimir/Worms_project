@@ -14,11 +14,11 @@ class Gun():
         self.y = worm.y
         self.x = worm.x
         self.body_id = self.canvas.create_line(
-                self.x,
-                self.y,
-                self.x + 20,
-                self.y - 20,
-                width=7)
+            self.x,
+            self.y,
+            self.x + 20,
+            self.y - 20,
+            width=7)
 
     def shot_prepair(self, event):
         if (self.worm.energy >= self.worm.gun.energy_cost()
@@ -42,7 +42,7 @@ class Gun():
             self.canvas.itemconfig(self.body_id, fill='orange')
         else:
             self.canvas.itemconfig(self.body_id, fill='black')
-    
+
     def move(self):
         self.x = self.worm.x
         self.y = self.worm.y

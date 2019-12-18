@@ -8,8 +8,6 @@ from field import Field
 
 from cloud import Cloud
 
-from explosion import Explosion
-
 from constant import constant
 
 
@@ -24,7 +22,7 @@ class Game():
 
         self.field = Field(self.canvas)
         self.field_list = self.field.field_model()
-        self.is_fild = 0
+        self.is_field = 0
         self.worms = []
         self.guns = []
         self.clouds = []
@@ -37,20 +35,20 @@ class Game():
         self.worms_number = self.const['worms_number']
         self.is_shot = 0
         self.event = 0
-        
+
         if len(self.const) < len(self.field.start_position):
             print('to many worms for this map')
         else:
             for num in range(self.const['worms_number']):
                 self.worms.append(
-                        Worm(
-                            self.field.start_position[num][0],
-                            self.field.start_position[num][1],
-                            num,
-                            self.canvas,
-                            self,
-                            )
-                        )
+                    Worm(
+                        self.field.start_position[num][0],
+                        self.field.start_position[num][1],
+                        num,
+                        self.canvas,
+                        self,
+                    )
+                )
 
         for num in range(self.const['clouds_number']):
             self.clouds.append(Cloud(num, self.canvas))
@@ -59,10 +57,10 @@ class Game():
         num = 0
         while num < len(self.bullets):
             if self.bullets[num].live <= 0:
-                if (self.bullets[num].x + self.bullets[num].splash < 800 
+                if (self.bullets[num].x + self.bullets[num].splash < 800
                         and self.bullets[num].x - self.bullets[num].splash > 0
                         and self.bullets[num].y + self.bullets[num].splash < 600
-                        and self.bullets[num].y - self.bullets[num].splash > 0): 
+                        and self.bullets[num].y - self.bullets[num].splash > 0):
                     self.field_list = self.bullets[num].collapse(self.field_list)
                     for worm in self.worms:
                         worm.live = self.bullets[num].damage(worm)
@@ -71,7 +69,7 @@ class Game():
                         print('hp = ', worm.live)
                 self.bullets.pop(num)
             num += 1
-            
+
         num = 0
         while num < len(self.worms):
             if self.worms[num].live <= 0:
@@ -79,13 +77,13 @@ class Game():
                 self.worms.pop(num)
                 self.worms_number -= 1
                 if num == self.tern:
-                    self.is_shot = 0 
+                    self.is_shot = 0
                 if num < self.tern:
                     self.tern -= 1
                 if self.tern == len(self.worms):
                     self.tern = 0
             num += 1
-    
+
     def is_hit(self):
         for worm in self.worms:
             for bullet in self.bullets:
@@ -135,7 +133,7 @@ class Game():
 
         for bullet in self.bullets:
             bullet.drowing()
-            
+
         for expl in self.boom:
             expl.drowing()
             self.boom = [active for active in self.boom if not active.count < 0]

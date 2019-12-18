@@ -8,6 +8,7 @@ from constant import constant
 
 import math
 
+
 class Machinegun(Gun):
     def init(self):
         self.const = constant()
@@ -17,7 +18,7 @@ class Machinegun(Gun):
         bullet = MachinegunBullet(self, self.canvas, self.game)
         bullet.init()
         self.angle = (math.atan2((event.y - bullet.y), (event.x - bullet.x))
-                + rnd(-15, 15) / 100)
+                      + rnd(-15, 15) / 100)
         bullet.vx = 5 * math.cos(self.angle)
         bullet.vy = 5 * math.sin(self.angle)
         bullet.x += self.r * math.cos(self.angle)
@@ -36,12 +37,12 @@ class Machinegun(Gun):
     def drowing(self):
         self.canvas.delete(self.body_id)
         self.body_id = self.canvas.create_line(
-                self.x,
-                self.y,
-                self.x + max(self.power, 10) * math.cos(self.angle),
-                self.y + max(self.power, 10) * math.sin(self.angle),
-                width=7,
-                )
+            self.x,
+            self.y,
+            self.x + max(self.power, 10) * math.cos(self.angle),
+            self.y + max(self.power, 10) * math.sin(self.angle),
+            width=7,
+            )
         if self.worm.live < 0:
             self.canvas.delete(self.body_id)
 
@@ -59,35 +60,41 @@ class MachinegunBullet(Bullet):
             self.angle = math.atan2(self.vy, self.vx)
         self.color = 'green'
         self.body_id = self.canvas.create_oval(
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r,
-                fill=self.color,
-                )
+            self.x - self.r,
+            self.y - self.r,
+            self.x + self.r,
+            self.y + self.r,
+            fill=self.color,
+            )
 
     def damage(self, worm):
         live = worm.live
         if (self.x - worm.x) ** 2 + (self.y - worm.y) ** 2 <= (self.r + worm.r) ** 2:
             live -= 1
         return(live)
-    
+
     def charge_x(self, worm):
         vx = worm.vx
-        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
-            vx += 0.02 * (self.splash + worm.r - ((self.x - worm.x)**2
-                    + (self.y - worm.y)**2)**0.5) * (worm.x - self.x) / (((self.x
-                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        delta = self.splash + worm.r
+        dx = self.x - worm.x
+        dy = self.y - worm.y
+
+        if delta**2 > dx**2 + dy**2:
+            dr = (dx**2 + dy**2)**0.5
+            vx += 0.02 * (delta - dr * dx / (dr + 1))
         return(vx)
 
     def charge_y(self, worm):
         vy = worm.vy
-        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
-            vy += 0.02 * (self.splash + worm.r - ((self.x - worm.x)**2
-                    + (self.y - worm.y)**2)**0.5) * (self.x - worm.x) / (((self.x
-                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        delta = self.splash + worm.r
+        dx = self.x - worm.x
+        dy = self.y - worm.y
+
+        if delta**2 > dx**2 + dy**2:
+            dr = (dx**2 + dy**2)**0.5
+            vy += 0.02 * (delta - dr * dy / (dr + 1))
         return(vy)
-    
+
     def move(self, field, wind):
         self.x += self.vx
         self.y += self.vy
@@ -116,15 +123,15 @@ class MachinegunBullet(Bullet):
     def hit_test(self, obj):
         if (self.x - obj.x) ** 2 + (self.y - obj.y) ** 2 <= (self.r + obj.r) ** 2:
             self.live = 0
-   
+
     def drowing(self):
         self.canvas.delete(self.body_id)
         self.body_id = self.canvas.create_oval(
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r,
-                fill=self.color,
-                )
+            self.x - self.r,
+            self.y - self.r,
+            self.x + self.r,
+            self.y + self.r,
+            fill=self.color,
+            )
         if self.live < 0:
             self.canvas.delete(self.body_id)

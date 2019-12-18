@@ -30,7 +30,7 @@ class Grenade(Gun):
 
     def energy_cost(self):
         return(600)
-    
+
     def drowing(self):
         self.canvas.delete(self.body_id)
         self.body_id = self.canvas.create_line(
@@ -46,6 +46,11 @@ class Grenade(Gun):
 
 class GrenadeBullet(Bullet):
     def init(self):
+        self.min_x_1 = -1
+        self.min_y_1 = -1
+        self.min_x_2 = -1
+        self.min_y_2 = -1
+
         self.const = constant()
         self.live = 200
         self.elastic = 0.6
@@ -62,34 +67,44 @@ class GrenadeBullet(Bullet):
                 self.y + self.r,
                 fill=self.color,
                 )
-    
+
     def damage(self, worm):
         live = worm.live
-        live -= int(max(0, 1.5 * (self.splash + worm.r
-            - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
+        live -= int(
+                    max(
+                        0,
+                        1.5 * (self.splash + worm.r - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)
+                    )
+                )
         return(live)
-    
+
     def charge_x(self, worm):
         vx = worm.vx
-        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
-            vx += 0.15 * (self.splash + worm.r - ((self.x - worm.x)**2
-                    + (self.y - worm.y)**2)**0.5) * (worm.x - self.x) / (((self.x
-                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        delta = self.splash + worm.r
+        dx = self.x - worm.x
+        dy = self.y - worm.y
+
+        if delta**2 > dx**2 + dy**2:
+            dr = (dx**2 + dy**2)**0.5
+            vx += 0.15 * (delta - dr * dx / (dr + 1))
         return(vx)
 
     def charge_y(self, worm):
         vy = worm.vy
-        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
-            vy += 0.15 * (self.splash + worm.r - ((self.x - worm.x)**2
-                    + (self.y - worm.y)**2)**0.5) * (self.x - worm.x) / (((self.x
-                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        delta = self.splash + worm.r
+        dx = self.x - worm.x
+        dy = self.y - worm.y
+
+        if delta**2 > dx**2 + dy**2:
+            dr = (dx**2 + dy**2)**0.5
+            vy += 0.15 * (delta - dr * dy / (dr + 1))
         return(vy)
-    
+
     def is_collision(self, field, wind):
         if (self.x + self.splash < 800
                 and self.x - self.splash > 0
                 and self.y + self.splash < 600
-                and self.y - self.splash > 0): 
+                and self.y - self.splash > 0):
             min_range_1 = self.r
             min_range_2 = self.r
             self.min_x_1 = -1
@@ -114,7 +129,7 @@ class GrenadeBullet(Bullet):
                         elif dx ** 2 + dy ** 2 < min_range_2 ** 2:
                             min_range_2 = (dx ** 2 + dy ** 2) ** 0.5
                             self.min_x_2 = point_x
-                            self.min_y_2= point_y
+                            self.min_y_2 = point_y
         if self.min_x_1 != -1 and self.min_x_2 != -1:
             self.collision()
         else:
@@ -122,17 +137,18 @@ class GrenadeBullet(Bullet):
             self.vy = self.vy * self.drag_coef
 
     def collision(self):
-        if self.min_x_2 - self.min_x_1 == 0:
+        dx = self.min_x_2 - self.min_x_1
+        dy = self.min_y_2 - self.min_y_1
+        dr = (dx**2 + dy**2)**0.5
+        if dx == 0:
             cos_a = 0
         else:
-            cos_a = (self.min_x_2 - self.min_x_1) / ((self.min_x_2
-                - self.min_x_1) ** 2 + (self.min_y_2 - self.min_y_1) ** 2) ** 0.5
+            cos_a = dx / dr
 
-        if self.min_y_2 - self.min_y_1 == 0:
+        if dy == 0:
             sin_a = 0
         else:
-            sin_a = (self.min_y_2 - self.min_y_1) / ((self.min_x_2
-                - self.min_x_1) ** 2 + (self.min_y_2 - self.min_y_1) ** 2) ** 0.5
+            sin_a = dy / dr
 
         self.x -= self.vx
         self.y -= self.vy
@@ -140,13 +156,13 @@ class GrenadeBullet(Bullet):
         self.vy -= self.const['grav_const']
         self.vy *= self.elastic
         self.vx *= self.elastic
-        
+
         instant_vx = self.vx
         self.vx = self.vx * cos_a + self.vy * sin_a
         self.vy = -instant_vx * sin_a + self.vy * cos_a
-        
+
         self.vy *= -1
-        
+
         instant_vx = self.vx
         self.vx = self.vx * cos_a - self.vy * sin_a
         self.vy = instant_vx * sin_a + self.vy * cos_a
@@ -160,12 +176,12 @@ class GrenadeBullet(Bullet):
         self.y += self.vy
         self.is_collision(field, wind)
         self.live -= 1
-   
+
     def hit_test(self, obj):
         if (self.x - obj.x) ** 2 + (self.y - obj.y) ** 2 <= (self.r + obj.r) ** 2:
             self.vx = 0
             self.vy = 0
-    
+
     def drowing(self):
         self.canvas.delete(self.body_id)
         self.body_id = self.canvas.create_oval(

@@ -33,7 +33,7 @@ class ExplosiveGrenade(Gun):
             bullet.x += self.r * math.cos(self.angle)
             bullet.y += self.r * math.sin(self.angle)
             bullets += [bullet]
-        
+
         self.preparation = 0
         self.power = 0
         return(bullets)
@@ -43,16 +43,16 @@ class ExplosiveGrenade(Gun):
 
     def energy_cost(self):
         return(600)
-    
+
     def drowing(self):
         self.canvas.delete(self.body_id)
         self.body_id = self.canvas.create_line(
-                self.x,
-                self.y,
-                self.x + max(self.power, 10) * math.cos(self.angle),
-                self.y + max(self.power, 10) * math.sin(self.angle),
-                width=7,
-                )
+            self.x,
+            self.y,
+            self.x + max(self.power, 10) * math.cos(self.angle),
+            self.y + max(self.power, 10) * math.sin(self.angle),
+            width=7,
+            )
         if self.worm.live < 0:
             self.canvas.delete(self.body_id)
 
@@ -69,40 +69,46 @@ class ExplosiveGrenadeBullet(Bullet):
         self.y += self.r * math.sin(self.gun.angle)
         self.color = 'orange'
         self.body_id = self.canvas.create_oval(
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r,
-                fill=self.color,
-                )
-    
+            self.x - self.r,
+            self.y - self.r,
+            self.x + self.r,
+            self.y + self.r,
+            fill=self.color,
+            )
+
     def damage(self, worm):
         live = worm.live
         live -= int(max(0, 1.5 * (self.splash + worm.r
-            - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
+                                  - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
         return(live)
-    
+
     def charge_x(self, worm):
         vx = worm.vx
-        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
-            vx += 0.15 * (self.splash + worm.r - ((self.x - worm.x)**2
-                    + (self.y - worm.y)**2)**0.5) * (worm.x - self.x) / (((self.x
-                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        delta = self.splash + worm.r
+        dx = self.x - worm.x
+        dy = self.y - worm.y
+
+        if delta**2 > dx**2 + dy**2:
+            dr = (dx**2 + dy**2)**0.5
+            vx += 0.15 * (delta - dr * dx / (dr + 1))
         return(vx)
 
     def charge_y(self, worm):
         vy = worm.vy
-        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
-            vy += 0.15 * (self.splash + worm.r - ((self.x - worm.x)**2
-                    + (self.y - worm.y)**2)**0.5) * (self.x - worm.x) / (((self.x
-                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        delta = self.splash + worm.r
+        dx = self.x - worm.x
+        dy = self.y - worm.y
+
+        if delta**2 > dx**2 + dy**2:
+            dr = (dx**2 + dy**2)**0.5
+            vy += 0.15 * (delta - dr * dy / (dr + 1))
         return(vy)
-    
+
     def is_collision(self, field, wind):
         if (self.x + self.splash < 800
                 and self.x - self.splash > 0
                 and self.y + self.splash < 600
-                and self.y - self.splash > 0): 
+                and self.y - self.splash > 0):
             min_range_1 = self.r
             min_range_2 = self.r
             self.min_x_1 = -1
@@ -127,7 +133,7 @@ class ExplosiveGrenadeBullet(Bullet):
                         elif dx ** 2 + dy ** 2 < min_range_2 ** 2:
                             min_range_2 = (dx ** 2 + dy ** 2) ** 0.5
                             self.min_x_2 = point_x
-                            self.min_y_2= point_y
+                            self.min_y_2 = point_y
         if self.min_x_1 != -1 and self.min_x_2 != -1:
             self.collision()
         else:
@@ -139,13 +145,13 @@ class ExplosiveGrenadeBullet(Bullet):
             cos_a = 0
         else:
             cos_a = (self.min_x_2 - self.min_x_1) / ((self.min_x_2
-                - self.min_x_1) ** 2 + (self.min_y_2 - self.min_y_1) ** 2) ** 0.5
+                                                      - self.min_x_1) ** 2 + (self.min_y_2 - self.min_y_1) ** 2) ** 0.5
 
         if self.min_y_2 - self.min_y_1 == 0:
             sin_a = 0
         else:
             sin_a = (self.min_y_2 - self.min_y_1) / ((self.min_x_2
-                - self.min_x_1) ** 2 + (self.min_y_2 - self.min_y_1) ** 2) ** 0.5
+                                                      - self.min_x_1) ** 2 + (self.min_y_2 - self.min_y_1) ** 2) ** 0.5
 
         self.x -= self.vx
         self.y -= self.vy
@@ -153,13 +159,13 @@ class ExplosiveGrenadeBullet(Bullet):
         self.vy -= self.const['grav_const']
         self.vy *= self.elastic
         self.vx *= self.elastic
-        
+
         instant_vx = self.vx
         self.vx = self.vx * cos_a + self.vy * sin_a
         self.vy = -instant_vx * sin_a + self.vy * cos_a
-        
+
         self.vy *= -1
-        
+
         instant_vx = self.vx
         self.vx = self.vx * cos_a - self.vy * sin_a
         self.vy = instant_vx * sin_a + self.vy * cos_a
@@ -173,21 +179,21 @@ class ExplosiveGrenadeBullet(Bullet):
         self.y += self.vy
         self.is_collision(field, wind)
         self.live -= 1
-   
+
     def hit_test(self, obj):
         if (self.x - obj.x) ** 2 + (self.y - obj.y) ** 2 <= (self.r + obj.r) ** 2:
             self.vx = 0
             self.vy = 0
-    
+
     def drowing(self):
         self.canvas.delete(self.body_id)
         self.body_id = self.canvas.create_oval(
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r,
-                fill=self.color,
-                )
+            self.x - self.r,
+            self.y - self.r,
+            self.x + self.r,
+            self.y + self.r,
+            fill=self.color,
+            )
         if self.live < 0:
             self.canvas.delete(self.body_id)
 
@@ -204,46 +210,52 @@ class ExplosiveBullet(Bullet):
         self.y += self.r * math.sin(self.gun.angle)
         self.color = 'orange'
         self.body_id = self.canvas.create_oval(
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r,
-                fill=self.color,
-                )
+            self.x - self.r,
+            self.y - self.r,
+            self.x + self.r,
+            self.y + self.r,
+            fill=self.color,
+            )
 
     def explosion(self):
         self.elastic = 0.9
         self.r = 3
         self.vx = rnd(-2, 2)
-        self.vy = rnd(1, 2)
+        self.vy = -rnd(1, 2)
 
     def damage(self, worm):
         live = worm.live
         live -= int(max(0, 1.5 * (self.splash + worm.r
-            - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
+                                  - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
         return(live)
-    
+
     def charge_x(self, worm):
         vx = worm.vx
-        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
-            vx += 0.15 * (self.splash + worm.r - ((self.x - worm.x)**2
-                    + (self.y - worm.y)**2)**0.5) * (worm.x - self.x) / (((self.x
-                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        delta = self.splash + worm.r
+        dx = self.x - worm.x
+        dy = self.y - worm.y
+
+        if delta**2 > dx**2 + dy**2:
+            dr = (dx**2 + dy**2)**0.5
+            vx += 0.15 * (delta - dr * dx / (dr + 1))
         return(vx)
 
     def charge_y(self, worm):
         vy = worm.vy
-        if (self.splash + worm.r)**2 > (self.x - worm.x)**2 + (self.y - worm.y)**2:
-            vy += 0.15 * (self.splash + worm.r - ((self.x - worm.x)**2
-                    + (self.y - worm.y)**2)**0.5) * (self.x - worm.x) / (((self.x
-                    - worm.x)**2 + (self.y - worm.y)**2)**0.5 + 1)
+        delta = self.splash + worm.r
+        dx = self.x - worm.x
+        dy = self.y - worm.y
+
+        if delta**2 > dx**2 + dy**2:
+            dr = (dx**2 + dy**2)**0.5
+            vy += 0.15 * (delta - dr * dy / (dr + 1))
         return(vy)
-    
+
     def is_collision(self, field, wind):
         if (self.x + self.splash < 800
                 and self.x - self.splash > 0
                 and self.y + self.splash < 600
-                and self.y - self.splash > 0): 
+                and self.y - self.splash > 0):
             min_range_1 = self.r
             min_range_2 = self.r
             self.min_x_1 = -1
@@ -268,7 +280,7 @@ class ExplosiveBullet(Bullet):
                         elif dx ** 2 + dy ** 2 < min_range_2 ** 2:
                             min_range_2 = (dx ** 2 + dy ** 2) ** 0.5
                             self.min_x_2 = point_x
-                            self.min_y_2= point_y
+                            self.min_y_2 = point_y
         if self.min_x_1 != -1 and self.min_x_2 != -1:
             self.collision()
         else:
@@ -280,13 +292,13 @@ class ExplosiveBullet(Bullet):
             cos_a = 0
         else:
             cos_a = (self.min_x_2 - self.min_x_1) / ((self.min_x_2
-                - self.min_x_1) ** 2 + (self.min_y_2 - self.min_y_1) ** 2) ** 0.5
+                                                      - self.min_x_1) ** 2 + (self.min_y_2 - self.min_y_1) ** 2) ** 0.5
 
         if self.min_y_2 - self.min_y_1 == 0:
             sin_a = 0
         else:
             sin_a = (self.min_y_2 - self.min_y_1) / ((self.min_x_2
-                - self.min_x_1) ** 2 + (self.min_y_2 - self.min_y_1) ** 2) ** 0.5
+                                                      - self.min_x_1) ** 2 + (self.min_y_2 - self.min_y_1) ** 2) ** 0.5
 
         self.x -= self.vx
         self.y -= self.vy
@@ -294,13 +306,13 @@ class ExplosiveBullet(Bullet):
         self.vy -= self.const['grav_const']
         self.vy *= self.elastic
         self.vx *= self.elastic
-        
+
         instant_vx = self.vx
         self.vx = self.vx * cos_a + self.vy * sin_a
         self.vy = -instant_vx * sin_a + self.vy * cos_a
-        
+
         self.vy *= -1
-        
+
         instant_vx = self.vx
         self.vx = self.vx * cos_a - self.vy * sin_a
         self.vy = instant_vx * sin_a + self.vy * cos_a
@@ -316,20 +328,20 @@ class ExplosiveBullet(Bullet):
         if self.live == 50:
             self.explosion()
         self.live -= 1
-   
+
     def hit_test(self, obj):
         if (self.x - obj.x) ** 2 + (self.y - obj.y) ** 2 <= (self.r + obj.r) ** 2:
             self.vx = 0
             self.vy = 0
-    
+
     def drowing(self):
         self.canvas.delete(self.body_id)
         self.body_id = self.canvas.create_oval(
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r,
-                fill=self.color,
-                )
+            self.x - self.r,
+            self.y - self.r,
+            self.x + self.r,
+            self.y + self.r,
+            fill=self.color,
+            )
         if self.live < 0:
             self.canvas.delete(self.body_id)
