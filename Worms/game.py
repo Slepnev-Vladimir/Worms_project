@@ -152,7 +152,6 @@ class Game():
         self.canvas.bind('<e>', self.worms[self.tern].choose_machinegun)
 
     def is_tern_end(self, event):
-        self.worms[self.tern].energy = 0
         self.tern_end = 1
 
     def main(self):
@@ -167,7 +166,7 @@ class Game():
         self.canvas.bind('<p>', self.is_tern_end)
 
         if self.worms_number > 1:
-            if (self.worms[self.tern].energy <= 0
+            if (self.is_shot == 0
                     and self.worms[self.tern].gun.preparation == 0
                     and self.tern_end == 1):
                 self.next_tern()
