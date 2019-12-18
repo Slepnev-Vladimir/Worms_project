@@ -78,7 +78,8 @@ class Game():
                 self.worms[num].drowing()
                 self.worms.pop(num)
                 self.worms_number -= 1
-                self.tern -= 1
+                if self.tern == len(self.worms):
+                    self.tern = 0
             num += 1
     
     def is_hit(self):
@@ -150,6 +151,7 @@ class Game():
         self.canvas.bind('<q>', self.worms[self.tern].choose_bazooka)
         self.canvas.bind('<w>', self.worms[self.tern].choose_grenade)
         self.canvas.bind('<e>', self.worms[self.tern].choose_machinegun)
+        self.canvas.bind('<r>', self.worms[self.tern].choose_explosive_grenade)
 
     def is_tern_end(self, event):
         self.tern_end = 1
