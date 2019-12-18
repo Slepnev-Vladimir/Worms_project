@@ -78,6 +78,10 @@ class Game():
                 self.worms[num].drowing()
                 self.worms.pop(num)
                 self.worms_number -= 1
+                if num == self.tern:
+                    self.is_shot = 0 
+                if num < self.tern:
+                    self.tern -= 1
                 if self.tern == len(self.worms):
                     self.tern = 0
             num += 1
