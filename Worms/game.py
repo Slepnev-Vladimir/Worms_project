@@ -184,7 +184,8 @@ class Game():
             self.root.after(self.const['update_time'], self.main)
         elif self.worms_number == 1:
             message = 'player ' + str(self.worms[0].player_number) + ' wins'
-            screen1 = self.canvas.create_text(400, 300, text = message, font = '28')
+            self.canvas.create_text(400, 300, text=message, font='28')
+
 
 game = Game()
 game.main()

@@ -31,7 +31,7 @@ class Bazooka(Gun):
     def reloading(self):
         self.rifle = 1
 
-    def energy_cost(self):
+    def en_cost(self):
         return(600)
 
     def drowing(self):
@@ -139,6 +139,9 @@ class BazookaBullet(Bullet):
             self.live = 0
 
     def drowing(self):
+        c = math.cos(self.angle)
+        s = math.sin(self.angle)
+
         self.canvas.delete(self.body_id)
         self.canvas.delete(self.fuel_id)
         self.body_id = self.canvas.create_polygon(
@@ -152,22 +155,22 @@ class BazookaBullet(Bullet):
         )
         if self.live < 990 and self.live > 0:
             self.fuel_id = self.canvas.create_polygon(
-                (self.x - self.r * math.cos(self.angle),
-                 self.y - self.r * math.sin(self.angle)),
-                (self.x - self.r * math.cos(self.angle) - (math.cos(self.angle) + 0.1 * math.sin(self.angle)) * self.r * self.power,
-                 self.y - self.r * math.sin(self.angle) - (math.sin(self.angle) - 0.1 * math.cos(self.angle)) * self.r * self.power),
-                (self.x - self.r * math.cos(self.angle) - (math.cos(self.angle) - 0.1 * math.sin(self.angle)) * self.r * self.power,
-                 self.y - self.r * math.sin(self.angle) - (math.sin(self.angle) + 0.1 * math.cos(self.angle)) * self.r * self.power),
+                (self.x - self.r * c,
+                 self.y - self.r * s),
+                (self.x - self.r * c - (c + 0.1 * s) * self.r * self.power,
+                 self.y - self.r * s - (s - 0.1 * c) * self.r * self.power),
+                (self.x - self.r * c - (c - 0.1 * s) * self.r * self.power,
+                 self.y - self.r * s - (s + 0.1 * c) * self.r * self.power),
                 fill='orange'
             )
         elif self.live > 0:
             self.fuel_id = self.canvas.create_polygon(
-                (self.x - self.r * math.cos(self.angle),
-                 self.y - self.r * math.sin(self.angle)),
-                (self.x - self.r * math.cos(self.angle) - (math.cos(self.angle) + 0.1 * math.sin(self.angle)) * self.r * self.fuel_length * self.power,
-                 self.y - self.r * math.sin(self.angle) - (math.sin(self.angle) - 0.1 * math.cos(self.angle)) * self.r * self.fuel_length * self.power),
-                (self.x - self.r * math.cos(self.angle) - (math.cos(self.angle) - 0.1 * math.sin(self.angle)) * self.r * self.fuel_length * self.power,
-                 self.y - self.r * math.sin(self.angle) - (math.sin(self.angle) + 0.1 * math.cos(self.angle)) * self.r * self.fuel_length * self.power),
+                (self.x - self.r * c,
+                 self.y - self.r * s),
+                (self.x - self.r * c - (c + 0.1 * s) * self.r * self.fuel_length * self.power,
+                 self.y - self.r * s - (s - 0.1 * c) * self.r * self.fuel_length * self.power),
+                (self.x - self.r * c - (c - 0.1 * s) * self.r * self.fuel_length * self.power,
+                 self.y - self.r * s - (s + 0.1 * c) * self.r * self.fuel_length * self.power),
                 fill='orange'
             )
             self.fuel_length += 0.1

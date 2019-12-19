@@ -30,6 +30,7 @@ class Worm:
         self.colors = ['blue', 'green', 'red', 'brown']
         self.gun = Bazooka(self, self.canvas, self.game)
         self.gun.init()
+        self.ec = self.gun.en_cost()
 
         self.body_id = self.canvas.create_oval(
             self.x - self.r,
@@ -37,37 +38,42 @@ class Worm:
             self.x + self.r,
             self.y + self.r,
             fill=self.colors[self.num])
-        self.hp_id = self.canvas.create_rectangle(self.x - 10,
+        self.hp_id = self.canvas.create_rectangle(
+                                                  self.x - 10,
                                                   self.y - 15,
                                                   self.x - 10 + 20 * self.live / 100,
                                                   self.y - 10,
                                                   fill='chartreuse2',
                                                   outline='black'
                                                   )
-        self.losthp_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.live / 100,
+        self.losthp_id = self.canvas.create_rectangle(
+                                                      self.x - 10 + 20 * self.live / 100,
                                                       self.y - 15,
                                                       self.x + 10,
                                                       self.y - 10,
                                                       fill='black',
                                                       outline='black'
                                                       )
-        self.energy_id = self.canvas.create_rectangle(self.x - 10,
+        self.energy_id = self.canvas.create_rectangle(
+                                                      self.x - 10,
                                                       self.y - 22,
                                                       self.x - 10 + 20 * self.energy / self.const['worm_energy'],
                                                       self.y - 17,
                                                       fill='royalblue2',
                                                       outline='black'
                                                       )
-        self.lostenergy_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.energy / self.const['worm_energy'],
+        self.lostenergy_id = self.canvas.create_rectangle(
+                                                          self.x - 10 + 20 * self.energy / self.const['worm_energy'],
                                                           self.y - 22,
                                                           self.x + 10,
                                                           self.y - 17,
                                                           fill='black',
                                                           outline='black'
                                                           )
-        self.required_energy_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.gun.energy_cost() / self.const['worm_energy'],
+        self.required_energy_id = self.canvas.create_rectangle(
+                                                               self.x - 10 + 20 * self.ec / self.const['worm_energy'],
                                                                self.y - 22,
-                                                               self.x - 10 + 20 * self.gun.energy_cost() / self.const['worm_energy'],
+                                                               self.x - 10 + 20 * self.ec / self.const['worm_energy'],
                                                                self.y - 17,
                                                                fill='white',
                                                                outline='white'
@@ -183,6 +189,7 @@ class Worm:
         print('energy = ', self.energy)
 
     def drowing(self):
+        self.ec = self.gun.en_cost()
         self.canvas.delete(self.body_id)
         self.canvas.delete(self.hp_id)
         self.canvas.delete(self.losthp_id)
@@ -196,37 +203,42 @@ class Worm:
             self.y + self.r,
             fill=self.colors[self.num],
             outline=self.outline)
-        self.hp_id = self.canvas.create_rectangle(self.x - 10,
+        self.hp_id = self.canvas.create_rectangle(
+                                                  self.x - 10,
                                                   self.y - 15,
                                                   self.x - 10 + 20 * self.live / 100,
                                                   self.y - 10,
                                                   fill='chartreuse2',
                                                   outline='black'
                                                   )
-        self.losthp_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.live / 100,
+        self.losthp_id = self.canvas.create_rectangle(
+                                                      self.x - 10 + 20 * self.live / 100,
                                                       self.y - 15,
                                                       self.x + 10,
                                                       self.y - 10,
                                                       fill='black',
                                                       outline='black'
                                                       )
-        self.energy_id = self.canvas.create_rectangle(self.x - 10,
+        self.energy_id = self.canvas.create_rectangle(
+                                                      self.x - 10,
                                                       self.y - 22,
                                                       self.x - 10 + 20 * self.energy / self.const['worm_energy'],
                                                       self.y - 17,
                                                       fill='royalblue2',
                                                       outline='black'
                                                       )
-        self.lostenergy_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.energy / self.const['worm_energy'],
+        self.lostenergy_id = self.canvas.create_rectangle(
+                                                          self.x - 10 + 20 * self.energy / self.const['worm_energy'],
                                                           self.y - 22,
                                                           self.x + 10,
                                                           self.y - 17,
                                                           fill='black',
                                                           outline='black'
                                                           )
-        self.required_energy_id = self.canvas.create_rectangle(self.x - 10 + 20 * self.gun.energy_cost() / self.const['worm_energy'],
+        self.required_energy_id = self.canvas.create_rectangle(
+                                                               self.x - 10 + 20 * self.ec / self.const['worm_energy'],
                                                                self.y - 22,
-                                                               self.x - 10 + 20 * self.gun.energy_cost() / self.const['worm_energy'],
+                                                               self.x - 10 + 20 * self.ec / self.const['worm_energy'],
                                                                self.y - 17,
                                                                fill='white',
                                                                outline='white'

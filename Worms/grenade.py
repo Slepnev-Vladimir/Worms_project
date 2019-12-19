@@ -28,7 +28,7 @@ class Grenade(Gun):
     def reloading(self):
         self.rifle = 1
 
-    def energy_cost(self):
+    def en_cost(self):
         return(600)
 
     def drowing(self):

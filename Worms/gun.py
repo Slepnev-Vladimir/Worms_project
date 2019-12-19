@@ -21,10 +21,10 @@ class Gun():
             width=7)
 
     def shot_prepair(self, event):
-        if (self.worm.energy >= self.worm.gun.energy_cost()
+        if (self.worm.energy >= self.worm.gun.en_cost()
                 and self.preparation != 1):
             self.preparation = 1
-            self.worm.energy -= self.worm.gun.energy_cost()
+            self.worm.energy -= self.worm.gun.en_cost()
             print('energy = ', self.worm.energy)
 
     def targetting(self, event=0):
