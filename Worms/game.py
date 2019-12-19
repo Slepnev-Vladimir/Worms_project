@@ -77,12 +77,12 @@ class Game():
                 self.worms[num].drowing()
                 self.worms.pop(num)
                 self.worms_number -= 1
-                if num == self.tern:
+                if num == self.turn:
                     self.is_shot = 0
-                if num < self.tern:
-                    self.tern -= 1
-                if self.tern == len(self.worms):
-                    self.tern = 0
+                if num < self.turn:
+                    self.turn -= 1
+                if self.turn == len(self.worms):
+                    self.turn = 0
             num += 1
 
     def is_hit(self):
@@ -170,7 +170,7 @@ class Game():
         self.visualization()
         self.bang_check()
         self.is_hit()
-        self.canvas.bind('<p>', self.is_tern_end)
+        self.canvas.bind('<p>', self.is_turn_end)
 
         if self.worms_number > 1:
             if (self.is_shot == 0
