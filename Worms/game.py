@@ -37,18 +37,20 @@ class Game():
         self.event = 0
 
         if len(self.const) < len(self.field.start_position):
-            print('to many worms for this map')
+            print('too many worms for this map')
         else:
             for num in range(self.const['worms_number']):
                 self.worms.append(
-                    Worm(
-                        self.field.start_position[num][0],
-                        self.field.start_position[num][1],
-                        num,
-                        self.canvas,
-                        self,
-                    )
-                )
+                                  Worm(
+                                       self.field.start_position[num][0],
+                                       self.field.start_position[num][1],
+                                       num,
+                                       self.canvas,
+                                       self,
+                                       )
+                                  )
+        for num in range(self.worms_number):
+            self.worms[num].player_number = num + 1
 
         for num in range(self.const['clouds_number']):
             self.clouds.append(Cloud(num, self.canvas))
@@ -180,9 +182,9 @@ class Game():
                 self.next_tern()
                 self.tern_end = 0
             self.root.after(self.const['update_time'], self.main)
-        else:
-            print('gg wp')
-
+        elif self.worms_number == 1:
+            message = 'player ' + str(self.worms[0].player_number) + ' wins'
+            screen1 = self.canvas.create_text(400, 300, text = message, font = '28')
 
 game = Game()
 game.main()

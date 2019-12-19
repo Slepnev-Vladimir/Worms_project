@@ -16,6 +16,7 @@ class Bazooka(Gun):
         bullet.init()
         self.angle = math.atan2((event.y - bullet.y), (event.x - bullet.x))
         bullet.vx = self.power * math.cos(self.angle)
+        bullet.v0x = bullet.vx
         bullet.vy = self.power * math.sin(self.angle)
         bullet.x += self.r * math.cos(self.angle)
         bullet.y += self.r * math.sin(self.angle)
@@ -111,7 +112,7 @@ class BazookaBullet(Bullet):
         self.x += self.vx
         self.y += self.vy
         if self.vx != 0:
-            self.angle = math.atan2(self.vy, self.vx)
+            self.angle = math.atan2(self.vy, self.v0x)
         is_touch = 0
 
         if (self.x + self.splash < 800

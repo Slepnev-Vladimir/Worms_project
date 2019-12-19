@@ -13,6 +13,7 @@ class Bullet():
         self.y = gun.y
         self.r = 0
         self.vx = 0
+        self.v0x = 0
         self.vy = 0
         self.color = 'blue'
         self.body_id = 0
