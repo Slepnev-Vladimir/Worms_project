@@ -92,7 +92,7 @@ class MachinegunBullet(Bullet):
 
         if delta**2 > dx**2 + dy**2:
             dr = (dx**2 + dy**2)**0.5
-            vy += 0.02 * (delta - dr * dy / (dr + 1))
+            vy -= 0.02 * (delta - dr * dy / (dr + 1))
         return(vy)
 
     def move(self, field, wind):

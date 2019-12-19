@@ -68,7 +68,6 @@ class Game():
                         worm.live = self.bullets[num].damage(worm)
                         worm.vx = self.bullets[num].charge_x(worm)
                         worm.vy = self.bullets[num].charge_y(worm)
-                        print('hp = ', worm.live)
                 self.bullets.pop(num)
             num += 1
 
@@ -97,8 +96,6 @@ class Game():
         self.tern = self.tern % self.worms_number
         for worm in self.worms:
             worm.energy = self.const['worm_energy']
-        print('wind = ', self.wind)
-        print('next tern, tern = ', self.tern)
 
     def shot_start(self, event):
         self.event = event

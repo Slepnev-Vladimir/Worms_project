@@ -25,7 +25,6 @@ class Gun():
                 and self.preparation != 1):
             self.preparation = 1
             self.worm.energy -= self.worm.gun.en_cost()
-            print('energy = ', self.worm.energy)
 
     def targetting(self, event=0):
         if event:

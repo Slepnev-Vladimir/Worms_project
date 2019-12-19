@@ -248,7 +248,7 @@ class ExplosiveBullet(Bullet):
 
         if delta**2 > dx**2 + dy**2:
             dr = (dx**2 + dy**2)**0.5
-            vy += 0.15 * (delta - dr * dy / (dr + 1))
+            vy -= 0.15 * (delta - dr * dy / (dr + 1))
         return(vy)
 
     def is_collision(self, field, wind):
