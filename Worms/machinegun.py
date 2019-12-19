@@ -81,7 +81,7 @@ class MachinegunBullet(Bullet):
 
         if delta**2 > dx**2 + dy**2:
             dr = (dx**2 + dy**2)**0.5
-            vx += 0.02 * (delta - dr * dx / (dr + 1))
+            vx -= 0.01 * dx / abs(dx) * (delta - dr * dx / (dr + 1))
         return(vx)
 
     def charge_y(self, worm):
@@ -92,7 +92,7 @@ class MachinegunBullet(Bullet):
 
         if delta**2 > dx**2 + dy**2:
             dr = (dx**2 + dy**2)**0.5
-            vy -= 0.02 * (delta - dr * dy / (dr + 1))
+            vy -= 0.01 * dx / abs(dx) * (delta - dr * dy / (dr + 1))
         return(vy)
 
     def move(self, field, wind):

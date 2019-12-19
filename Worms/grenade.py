@@ -73,7 +73,7 @@ class GrenadeBullet(Bullet):
         live -= int(
                     max(
                         0,
-                        1.5 * (self.splash + worm.r - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)
+                        (self.splash + worm.r - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)
                     )
                 )
         return(live)
@@ -86,7 +86,7 @@ class GrenadeBullet(Bullet):
 
         if delta**2 > dx**2 + dy**2:
             dr = (dx**2 + dy**2)**0.5
-            vx += 0.15 * (delta - dr * dx / (dr + 1))
+            vx -= 0.05 * dx / (abs(dx) + 1) * (delta - dr * dx / (dr + 1))
         return(vx)
 
     def charge_y(self, worm):
@@ -97,7 +97,7 @@ class GrenadeBullet(Bullet):
 
         if delta**2 > dx**2 + dy**2:
             dr = (dx**2 + dy**2)**0.5
-            vy -= 0.15 * (delta - dr * dy / (dr + 1))
+            vy -= 0.05 * dy / (abs(dy) + 1) * (delta - dr * dy / (dr + 1))
         return(vy)
 
     def is_collision(self, field, wind):
