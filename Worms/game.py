@@ -30,8 +30,8 @@ class Game():
         self.boom = []
         self.field.field_visual()
         self.wind = rnd(-3, 3)
-        self.tern = 0
-        self.tern_end = 0
+        self.turn = 0
+        self.turn_end = 0
         self.worms_number = self.const['worms_number']
         self.is_shot = 0
         self.event = 0
@@ -90,24 +90,24 @@ class Game():
             for bullet in self.bullets:
                 bullet.hit_test(worm)
 
-    def next_tern(self):
-        self.tern += 1
+    def next_turn(self):
+        self.turn += 1
         self.wind = rnd(-3, 3)
-        self.tern = self.tern % self.worms_number
+        self.turn = self.turn % self.worms_number
         for worm in self.worms:
             worm.energy = self.const['worm_energy']
 
     def shot_start(self, event):
         self.event = event
-        if self.worms[self.tern].gun.preparation == 1:
+        if self.worms[self.turn].gun.preparation == 1:
             self.is_shot = 1
 
     def shot(self):
-        if self.worms[self.tern].gun.rifle > 0 and self.is_shot == 1:
-            self.bullets = self.worms[self.tern].gun.new_bullet(self.event, self.bullets)
+        if self.worms[self.turn].gun.rifle > 0 and self.is_shot == 1:
+            self.bullets = self.worms[self.turn].gun.new_bullet(self.event, self.bullets)
         else:
             self.is_shot = 0
-            self.worms[self.tern].gun.reloading()
+            self.worms[self.turn].gun.reloading()
 
     def motion(self):
         for num in range(self.worms_number):
@@ -124,7 +124,7 @@ class Game():
             cloud.drowing()
 
         for num in range(self.worms_number):
-            if self.tern == num:
+            if self.turn == num:
                 self.worms[num].outline = 'white'
             else:
                 self.worms[num].outline = 'black'
@@ -138,28 +138,28 @@ class Game():
             self.boom = [active for active in self.boom if not active.count < 0]
 
     def shooting_processing(self):
-        self.canvas.bind('<Motion>', self.worms[self.tern].gun.targetting)
-        self.canvas.bind('<Button-1>', self.worms[self.tern].gun.shot_prepair)
-        self.worms[self.tern].gun.power_up()
+        self.canvas.bind('<Motion>', self.worms[self.turn].gun.targetting)
+        self.canvas.bind('<Button-1>', self.worms[self.turn].gun.shot_prepair)
+        self.worms[self.turn].gun.power_up()
         self.canvas.bind('<ButtonRelease-1>', self.shot_start)
 
     def walking_processing(self):
-        self.canvas.bind('<Shift-Up>', self.worms[self.tern].jump_up)
-        self.canvas.bind('<Shift-Down>', self.worms[self.tern].jump_down)
-        self.canvas.bind('<Shift-Left>', self.worms[self.tern].jump_left)
-        self.canvas.bind('<Shift-Right>', self.worms[self.tern].jump_right)
+        self.canvas.bind('<Shift-Up>', self.worms[self.turn].jump_up)
+        self.canvas.bind('<Shift-Down>', self.worms[self.turn].jump_down)
+        self.canvas.bind('<Shift-Left>', self.worms[self.turn].jump_left)
+        self.canvas.bind('<Shift-Right>', self.worms[self.turn].jump_right)
 
-        self.canvas.bind('<Left>', self.worms[self.tern].move_left)
-        self.canvas.bind('<Right>', self.worms[self.tern].move_right)
+        self.canvas.bind('<Left>', self.worms[self.turn].move_left)
+        self.canvas.bind('<Right>', self.worms[self.turn].move_right)
 
     def choose_weapon(self):
-        self.canvas.bind('<q>', self.worms[self.tern].choose_bazooka)
-        self.canvas.bind('<w>', self.worms[self.tern].choose_grenade)
-        self.canvas.bind('<e>', self.worms[self.tern].choose_machinegun)
-        self.canvas.bind('<r>', self.worms[self.tern].choose_explosive_grenade)
+        self.canvas.bind('<q>', self.worms[self.turn].choose_bazooka)
+        self.canvas.bind('<w>', self.worms[self.turn].choose_grenade)
+        self.canvas.bind('<e>', self.worms[self.turn].choose_machinegun)
+        self.canvas.bind('<r>', self.worms[self.turn].choose_explosive_grenade)
 
-    def is_tern_end(self, event):
-        self.tern_end = 1
+    def is_turn_end(self, event):
+        self.turn_end = 1
 
     def main(self):
         self.shooting_processing()
@@ -174,10 +174,10 @@ class Game():
 
         if self.worms_number > 1:
             if (self.is_shot == 0
-                    and self.worms[self.tern].gun.preparation == 0
-                    and self.tern_end == 1):
-                self.next_tern()
-                self.tern_end = 0
+                    and self.worms[self.turn].gun.preparation == 0
+                    and self.turn_end == 1):
+                self.next_turn()
+                self.turn_end = 0
             self.root.after(self.const['update_time'], self.main)
         elif self.worms_number == 1:
             message = 'player ' + str(self.worms[0].player_number) + ' wins'
