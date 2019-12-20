@@ -101,35 +101,38 @@ class GrenadeBullet(Bullet):
         return(vy)
 
     def is_collision(self, field, wind):
-        if (self.x + self.splash < 800
-                and self.x - self.splash > 0
-                and self.y + self.splash < 600
-                and self.y - self.splash > 0):
-            min_range_1 = self.r
-            min_range_2 = self.r
-            self.min_x_1 = -1
-            self.min_y_1 = -1
-            self.min_x_2 = -1
-            self.min_y_2 = -1
+        min_range_1 = self.r
+        min_range_2 = self.r
+        self.min_x_1 = -1
+        self.min_y_1 = -1
+        self.min_x_2 = -1
+        self.min_y_2 = -1
 
-            for point_x in range(int(self.x) - self.r, int(self.x) + self.r):
-                dx = -int(self.x) + point_x
-                h = int((self.r**2 - abs(int(dx)**2)**0.5))
-                for point_y in range(int(self.y) - h, int(self.y) + h):
-                    if field[point_x, point_y] != 0:
-                        dy = point_y - self.y
+        for point_x in range(
+                max(int(self.x) - self.r, 0),
+                min(int(self.x) + self.r, self.const['field_width'])
+                ):
+            dx = -int(self.x) + point_x
+            h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
+            for point_y in range(
+                    max(int(self.y) - h, 0),
+                    min(int(self.y) + h, self.const['field_height'])
+                    ):
+                dy = point_y - self.y
+                if field[point_x, point_y] != 0:
+                    dy = point_y - self.y
 
-                        if dx ** 2 + dy ** 2 < min_range_1 ** 2:
-                            min_range_2 = min_range_1
-                            min_range_1 = (dx ** 2 + dy ** 2) ** 0.5
-                            self.min_x_2 = self.min_x_1
-                            self.min_y_2 = self.min_y_1
-                            self.min_x_1 = point_x
-                            self.min_y_1 = point_y
-                        elif dx ** 2 + dy ** 2 < min_range_2 ** 2:
-                            min_range_2 = (dx ** 2 + dy ** 2) ** 0.5
-                            self.min_x_2 = point_x
-                            self.min_y_2 = point_y
+                    if dx ** 2 + dy ** 2 < min_range_1 ** 2:
+                        min_range_2 = min_range_1
+                        min_range_1 = (dx ** 2 + dy ** 2) ** 0.5
+                        self.min_x_2 = self.min_x_1
+                        self.min_y_2 = self.min_y_1
+                        self.min_x_1 = point_x
+                        self.min_y_1 = point_y
+                    elif dx ** 2 + dy ** 2 < min_range_2 ** 2:
+                        min_range_2 = (dx ** 2 + dy ** 2) ** 0.5
+                        self.min_x_2 = point_x
+                        self.min_y_2 = point_y
         if self.min_x_1 != -1 and self.min_x_2 != -1:
             self.collision()
         else:

@@ -16,7 +16,7 @@ class Game():
         self.const = constant()
         self.root = Tk()
         self.fr = Frame(self.root)
-        self.root.geometry('800x600')
+        self.root.geometry(str(self.const['field_width']) + 'x' + str(self.const['field_height']))
         self.canvas = Canvas(self.root, bg='skyblue')
         self.canvas.pack(fill=BOTH, expand=1)
 
@@ -35,6 +35,8 @@ class Game():
         self.worms_number = self.const['worms_number']
         self.is_shot = 0
         self.event = 0
+        self.canvas.bind('<p>', self.is_turn_end)
+        self.canvas.bind('<ButtonRelease-1>', self.shot_start)
 
         if len(self.const) < len(self.field.start_position):
             print('too many worms for this map')
@@ -55,19 +57,19 @@ class Game():
         for num in range(self.const['clouds_number']):
             self.clouds.append(Cloud(num, self.canvas))
 
+        self.shooting_processing()
+        self.walking_processing()
+        self.choose_weapon()
+
     def bang_check(self):
         num = 0
         while num < len(self.bullets):
             if self.bullets[num].live <= 0:
-                if (self.bullets[num].x + self.bullets[num].splash < 800
-                        and self.bullets[num].x - self.bullets[num].splash > 0
-                        and self.bullets[num].y + self.bullets[num].splash < 600
-                        and self.bullets[num].y - self.bullets[num].splash > 0):
-                    self.field_list = self.bullets[num].collapse(self.field_list)
-                    for worm in self.worms:
-                        worm.live = self.bullets[num].damage(worm)
-                        worm.vx = self.bullets[num].charge_x(worm)
-                        worm.vy = self.bullets[num].charge_y(worm)
+                self.field_list = self.bullets[num].collapse(self.field_list)
+                for worm in self.worms:
+                    worm.live = self.bullets[num].damage(worm)
+                    worm.vx = self.bullets[num].charge_x(worm)
+                    worm.vy = self.bullets[num].charge_y(worm)
                 self.bullets.pop(num)
             num += 1
 
@@ -96,6 +98,9 @@ class Game():
         self.turn = self.turn % self.worms_number
         for worm in self.worms:
             worm.energy = self.const['worm_energy']
+        self.walking_processing()
+        self.choose_weapon()
+        self.shooting_processing()
 
     def shot_start(self, event):
         self.event = event
@@ -140,8 +145,6 @@ class Game():
     def shooting_processing(self):
         self.canvas.bind('<Motion>', self.worms[self.turn].gun.targetting)
         self.canvas.bind('<Button-1>', self.worms[self.turn].gun.shot_prepair)
-        self.worms[self.turn].gun.power_up()
-        self.canvas.bind('<ButtonRelease-1>', self.shot_start)
 
     def walking_processing(self):
         self.canvas.bind('<Shift-Up>', self.worms[self.turn].jump_up)
@@ -152,25 +155,38 @@ class Game():
         self.canvas.bind('<Left>', self.worms[self.turn].move_left)
         self.canvas.bind('<Right>', self.worms[self.turn].move_right)
 
+    def choose_bazooka(self, event):
+        self.worms[self.turn].choose_bazooka(event)
+        self.shooting_processing()
+
+    def choose_grenade(self, event):
+        self.worms[self.turn].choose_grenade(event)
+        self.shooting_processing()
+
+    def choose_machinegun(self, event):
+        self.worms[self.turn].choose_machinegun(event)
+        self.shooting_processing()
+
+    def choose_explosive_grenade(self, event):
+        self.worms[self.turn].choose_explosive_grenade(event)
+        self.shooting_processing()
+
     def choose_weapon(self):
-        self.canvas.bind('<q>', self.worms[self.turn].choose_bazooka)
-        self.canvas.bind('<w>', self.worms[self.turn].choose_grenade)
-        self.canvas.bind('<e>', self.worms[self.turn].choose_machinegun)
-        self.canvas.bind('<r>', self.worms[self.turn].choose_explosive_grenade)
+        self.canvas.bind('<q>', self.choose_bazooka)
+        self.canvas.bind('<w>', self.choose_grenade)
+        self.canvas.bind('<e>', self.choose_machinegun)
+        self.canvas.bind('<r>', self.choose_explosive_grenade)
 
     def is_turn_end(self, event):
         self.turn_end = 1
 
     def main(self):
-        self.shooting_processing()
+        self.worms[self.turn].gun.power_up()
         self.shot()
-        self.walking_processing()
-        self.choose_weapon()
         self.motion()
         self.visualization()
         self.bang_check()
         self.is_hit()
-        self.canvas.bind('<p>', self.is_turn_end)
 
         if self.worms_number > 1:
             if (self.is_shot == 0

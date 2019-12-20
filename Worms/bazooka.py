@@ -115,15 +115,16 @@ class BazookaBullet(Bullet):
             self.angle = math.atan2(self.vy, self.v0x)
         is_touch = 0
 
-        if (self.x + self.splash < 800
-                and self.x - self.splash > 0
-                and self.y + self.splash < 600
-                and self.y - self.splash > 0):
-            if self.y > self.r:
-                for point_x in range(int(self.x) - self.r, int(self.x) + self.r):
-                    h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
-                    for point_y in range(int(self.y) - h, int(self.y) + h):
-                        is_touch += field[point_x, point_y]
+        for point_x in range(
+                max(int(self.x) - self.r, 0),
+                min(int(self.x) + self.r, self.const['field_width'])
+                ):
+            h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
+            for point_y in range(
+                    max(int(self.y) - h, 0),
+                    min(int(self.y) + h, self.const['field_height'])
+                    ):
+                is_touch += field[point_x, point_y]
 
         if is_touch != 0:
             self.live = 0

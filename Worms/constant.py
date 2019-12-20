@@ -5,5 +5,7 @@ def constant():
         'update_time': 30,
         'worm_energy': 1000,
         'clouds_number': 5,
+        'field_width': 800,
+        'field_height': 600,
     }
     return(constant)

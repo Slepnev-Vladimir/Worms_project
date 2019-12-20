@@ -104,15 +104,18 @@ class Worm:
         self.y += self.vy
 
         self.is_touch = 0
-        if (self.x + self.r < 800
-                and self.x - self.r > 0
-                and self.y + self.r < 600
-                and self.y - self.r > 0):
-            for point_x in range(int(self.x) - self.r, int(self.x) + self.r):
-                h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
-                for point_y in range(int(self.y) - h, int(self.y) + h):
-                    self.is_touch += field[point_x, point_y]
-        else:
+        for point_x in range(
+                max(int(self.x) - self.r, 0),
+                min(int(self.x) + self.r, self.const['field_width'])
+                ):
+            h = int((self.r**2 - abs(int(self.x) - point_x)**2)**0.5)
+            for point_y in range(
+                    max(int(self.y) - h, 0),
+                    min(int(self.y) + h, self.const['field_height'])
+                    ):
+                self.is_touch += field[point_x, point_y]
+
+        if self.y > self.const['field_height']:
             self.live -= 1
 
         if self.is_touch == 296:            # depends on the size of the worm
