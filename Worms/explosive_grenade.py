@@ -78,8 +78,10 @@ class ExplosiveGrenadeBullet(Bullet):
 
     def damage(self, worm):
         live = worm.live
-        live -= int(max(0, (self.splash + worm.r
-                                  - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
+        delta = self.splash + worm.r
+        dx = self.x - worm.x
+        dy = self.y - worm.y
+        live -= int(max(0, (delta - (dx**2 + dy**2)**0.5)))
         return(live)
 
     def charge_x(self, worm):
@@ -227,8 +229,10 @@ class ExplosiveBullet(Bullet):
 
     def damage(self, worm):
         live = worm.live
-        live -= int(max(0, (self.splash + worm.r
-                                  - ((self.x - worm.x)**2 + (self.y - worm.y)**2)**0.5)))
+        delta = self.splash + worm.r
+        dx = self.x - worm.x
+        dy = self.y - worm.y
+        live -= int(max(0, (delta - (dx**2 + dy**2)**0.5)))
         return(live)
 
     def charge_x(self, worm):
